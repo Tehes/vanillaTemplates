@@ -45,14 +45,15 @@ function chainProps(obj, props) {
 function renderTemplate(template, data, domEl) {
     var clone = template.content.cloneNode(true);
 
-    // LOOP TEST AREA
     var loops = clone.querySelectorAll("[data-template-loop]");
-
     for (let i = 0; i < loops.length; i++) {
+		loops[i].dataset.templateIteration = 0;
 
         let loopData = loops[i].dataset.templateLoop;
-        for (let j = 0; j < data[loopData].length - 1; j++) {
-            loops[i].after(loops[i].cloneNode(true));
+        for (let j = 1; j < data[loopData].length; j++) {
+			var clonedLoop = loops[i].cloneNode(true);
+			clonedLoop.dataset.templateIteration = data[loopData].length-j;
+            loops[i].after(clonedLoop);
         }
 
     }
@@ -65,16 +66,14 @@ function renderTemplate(template, data, domEl) {
         for (let j = 0; j < loopVars.length; j++) {
             if (loopVars[j].textContent === "") {
                 // TO DO: Iterate over variables and append index
-                // loopVars[j].textContent = loopData + "." + i;
+                loopVars[j].textContent = loopData + "." + loops[i].dataset.templateIteration;
             }
             else {
-                loopVars[j].textContent = loopData + "." + i + "." + loopVars[j].textContent;
+                loopVars[j].textContent = loopData + "." + loops[i].dataset.templateIteration + "." + loopVars[j].textContent;
             }
         }
         loops[i].outerHTML = loops[i].innerHTML;
     }
-
-    // TEST END
 
     var templateVars = clone.querySelectorAll("[data-template-var]");
     renderTempVar(data, templateVars, domEl, clone);
