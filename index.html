@@ -22,23 +22,23 @@
 	</div>
 
 	<template id="persons">
-		<p>Name: <span data-template-var>name.first</span> <span data-template-var>name.last</span></p>
-		<p>Age: <span data-template-var>age</span></p>
+		<p>Name: <var>name.first</var> <var>name.last</var></p>
+		<p>Age: <var>age</span></p>
 		<p>Friends:
-			<span data-template-loop="friends">
-				<span data-template-var>name</span>
-				(<span data-template-var>age</span>),
-			</span>
+			<var data-loop="friends">
+				<var>name</var>
+				(<var>age</var>),
+			</var>
 		</p>
 		<p>hobbies:
 			<ol>
-			<span data-template-loop="hobbies">
-				<li data-template-var></li>
-			</span>
+			<var data-loop="hobbies">
+				<li data-var></li>
+			</var>
 			</ol>
-		<img src="" data-template-attr="src:profilePic">
-		<a href="" data-template-attr="href:facebook">
-			Link to <span data-template-var>name.first</span> <span data-template-var>name.last</span>
+		<img src="" data-attr="src:profilePic">
+		<a href="" data-attr="href:facebook">
+			Wiki: <var>name.first</var> <var>name.last</var>
 		</a>
 	</template>
 	<script type="module" src="./js/app.js"></script>

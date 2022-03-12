@@ -48,11 +48,11 @@ function renderTemplate(template, data, domEl) {
     var clone = template.content.cloneNode(true);
 
     //Loops
-    var loops = clone.querySelectorAll("[data-template-loop]");
+    var loops = clone.querySelectorAll("[data-loop]");
     for (let i = 0; i < loops.length; i++) {
 		loops[i].dataset.templateIteration = 0;
 
-        let loopData = loops[i].dataset.templateLoop;
+        let loopData = loops[i].dataset.loop;
         for (let j = 1; j < data[loopData].length; j++) {
 			var clonedLoop = loops[i].cloneNode(true);
 			clonedLoop.dataset.templateIteration = data[loopData].length-j;
@@ -61,10 +61,10 @@ function renderTemplate(template, data, domEl) {
 
     }
 
-    loops = clone.querySelectorAll("[data-template-loop]");
+    loops = clone.querySelectorAll("[data-loop]");
     for (let i = 0; i < loops.length; i++) {
-        let loopData = loops[i].dataset.templateLoop;
-        let loopVars = loops[i].querySelectorAll("[data-template-var]");
+        let loopData = loops[i].dataset.loop;
+        let loopVars = loops[i].querySelectorAll("var");
 
         for (let j = 0; j < loopVars.length; j++) {
             if (loopVars[j].textContent === "") {
@@ -79,21 +79,21 @@ function renderTemplate(template, data, domEl) {
     }
 
     //Attributes
-    var templateAttr = clone.querySelectorAll("[data-template-attr]");
+    var templateAttr = clone.querySelectorAll("[data-attr]");
 
     for (let values of templateAttr) {
-        let attr = values.dataset.templateAttr.split(":");
+        let attr = values.dataset.attr.split(":");
         let key = attr[0];
         let value = chainProps(data, attr[1]);
         values.setAttribute(key, value);
     }
 
     //Variables
-    var templateVars = clone.querySelectorAll("[data-template-var]");
+    var templateVars = clone.querySelectorAll("var");
     for (let values of templateVars) {
         values.innerHTML = chainProps(data, values.textContent);
-        values.removeAttribute("data-template-var");
-        if (values.tagName === "SPAN") {
+        values.removeAttribute("data-var");
+        if (values.tagName === "VAR") {
             values.outerHTML = values.innerHTML;
         }
     }
