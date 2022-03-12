@@ -21,7 +21,9 @@ var persons = {
             age: 40
         },
     ],
-    hobbies: ["singing", "dancing", "reading", "cycling"]
+    hobbies: ["singing", "dancing", "reading", "cycling"],
+    profilePic: "https://www.fillmurray.com/300/300",
+    facebook: "https://de.wikipedia.org/wiki/Bill_Murray"
 };
 
 /* --------------------------------------------------------------------------------------------------
@@ -45,6 +47,7 @@ function chainProps(obj, props) {
 function renderTemplate(template, data, domEl) {
     var clone = template.content.cloneNode(true);
 
+    //Loops
     var loops = clone.querySelectorAll("[data-template-loop]");
     for (let i = 0; i < loops.length; i++) {
 		loops[i].dataset.templateIteration = 0;
@@ -75,15 +78,27 @@ function renderTemplate(template, data, domEl) {
         loops[i].outerHTML = loops[i].innerHTML;
     }
 
-    var templateVars = clone.querySelectorAll("[data-template-var]");
-    renderTempVar(data, templateVars, domEl, clone);
-}
+    //Attributes
+    var templateAttr = clone.querySelectorAll("[data-template-attr]");
 
-function renderTempVar(data, tempVars, source, appendTarget) {
-    for (let values of tempVars) {
-        values.outerHTML = chainProps(data, values.textContent);
+    for (let values of templateAttr) {
+        let attr = values.dataset.templateAttr.split(":");
+        let key = attr[0];
+        let value = chainProps(data, attr[1]);
+        values.setAttribute(key, value);
     }
-    source.append(appendTarget);
+
+    //Variables
+    var templateVars = clone.querySelectorAll("[data-template-var]");
+    for (let values of templateVars) {
+        values.innerHTML = chainProps(data, values.textContent);
+        values.removeAttribute("data-template-var");
+        if (values.tagName === "SPAN") {
+            values.outerHTML = values.innerHTML;
+        }
+    }
+
+    domEl.append(clone);
 }
 
 function init() {
