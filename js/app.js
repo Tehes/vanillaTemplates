@@ -86,6 +86,8 @@ function renderTemplate(template, data, domEl) {
         let key = attr[0];
         let value = chainProps(data, attr[1]);
         values.setAttribute(key, value);
+        values.removeAttribute("data-attr");
+        console.log(values.attributes);
     }
 
     //Variables
