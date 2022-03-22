@@ -1,3 +1,14 @@
+/* --------------------------------------------------------------------------------------------------
+Version: 0.8
+
+Simple Vanilla JS template engine
+    - completely valid HTML syntax
+    - no mustaches or other logic to learn
+    - uses the <var> element for variables
+
+github repo @ https://github.com/Tehes/vanillaTemplates
+---------------------------------------------------------------------------------------------------*/
+
 // transform a string into properties of an object with dot-notation
 function chainProps(obj, props) {
     if (!props)
