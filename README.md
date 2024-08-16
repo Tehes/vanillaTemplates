@@ -13,6 +13,7 @@ Clone the repository:
 ```bash
 git clone https://github.com/Tehes/vanillaTemplates.git
 
+```html
 Include the script in your HTML file:
 <script type="module" src="path/to/vanillaTemplates.js"></script>
 
