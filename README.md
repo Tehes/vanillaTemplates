@@ -7,18 +7,6 @@ A lightweight and simple JavaScript template engine that uses valid HTML syntax 
 - Supports loops (`data-loop`) and data-binding via `<var>` elements.
 - Flexible data attributes (`data-attr`) for binding data to element attributes.
 
-## Installation
-
-Clone the repository:
-```bash
-git clone https://github.com/Tehes/vanillaTemplates.git
-```
-
-Include the script in your HTML file:
-```html
-<script type="module" src="path/to/vanillaTemplates.js"></script>
-```
-
 ## Usage
 ### HTML Template Example
 
