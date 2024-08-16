@@ -12,13 +12,17 @@ A lightweight and simple JavaScript template engine that uses valid HTML syntax 
 Clone the repository:
 ```bash
 git clone https://github.com/Tehes/vanillaTemplates.git
+```
 
-```html
 Include the script in your HTML file:
+```html
 <script type="module" src="path/to/vanillaTemplates.js"></script>
+```
 
 ## Usage
 ### HTML Template Example
+
+```html 
 <template id="my-template">
     <div class="user">
         <h2><var>user.name</var></h2>
@@ -29,9 +33,10 @@ Include the script in your HTML file:
         </ul>
     </div>
 </template>
+```
 
 ### JavaScript Example
-
+```javascript
 import { renderTemplate } from './vanillaTemplates.js';
 
 const data = {
@@ -47,5 +52,6 @@ const template = document.getElementById('my-template');
 const container = document.querySelector('#output');
 
 renderTemplate(template, data, container);
+```
 
 
