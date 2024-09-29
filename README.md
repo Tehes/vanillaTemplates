@@ -14,14 +14,14 @@ A lightweight and simple JavaScript template engine that uses valid HTML syntax 
 ### HTML Template Example
 
 ```html
-<template id="my-template">
-    <div class="user"></div>
-        <h2><var>name</var></h2>
-        <p><var>email</var></p>
-        <img data-attr="src:avatar" alt="User Avatar">
+<template id="user-template">
+    <div class="user">
+        <h2><var>user.name</var></h2>
+        <p>Email: <var>user.email</var></p>
+        <img data-attr="src:user.avatar" alt="User Avatar">
         <ul>
-            <var data-loop="hobbies">
-                <li><var></var></li> 
+            <var data-loop="user.hobbies">
+                <li><var></var></li>
             </var>
         </ul>
     </div>
