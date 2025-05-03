@@ -178,6 +178,13 @@ this renders as:
 The `data-attr` attribute allows you to dynamically set the value of an HTML
 attribute, such as `src`, `href`, or `alt`.
 
+You can bind **multiple attributes at once** by separating each
+`attribute:dataPath` pair with a pipe character (`|`):
+
+```html
+<img data-attr="src:user.avatar|alt:user.name">
+```
+
 ### Example
 
 ```html
@@ -185,9 +192,10 @@ attribute, such as `src`, `href`, or `alt`.
 <!-- The image source will be set dynamically -->
 ```
 
-The syntax for `data-attr` is `data-attr="attribute:dataPath"`, where
-`attribute` is the HTML attribute you want to set, and `dataPath` is the path to
-the data in the JavaScript object.
+The basic syntax of `data-attr` is `data-attr="attribute:dataPath"`, where
+`attribute` is the HTML attribute you want to set and `dataPath` is the path
+inside your JavaScript object.\
+Multiple pairs can be chained with `|`.
 
 ### JavaScript Example
 
@@ -205,6 +213,11 @@ This will produce:
 
 ```html
 <img src="https://example.com/avatar.jpg" alt="User Avatar">
+```
+
+```html
+<!-- With multiple bindings -->
+<img src="https://example.com/avatar.jpg" alt="Jane Doe">
 ```
 
 ## Conclusion
