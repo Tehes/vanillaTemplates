@@ -1,4 +1,4 @@
-import { renderTemplate } from './renderTemplate.js'; // adjust path if necessary
+import { renderTemplate } from '../core/renderTemplate.js'; // adjust path if necessary
 
 /**
  * Loads JSON data, an external HTML template and mounts the rendered fragment.

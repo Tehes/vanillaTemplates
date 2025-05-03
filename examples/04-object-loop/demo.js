@@ -1,4 +1,4 @@
-import { loadDataAndTemplate } from '../../js/loader.js';
+import { loadDataAndTemplate } from '../../browser/loader.js';
 
 loadDataAndTemplate(
     './data.json',       // JSON file
