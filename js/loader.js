@@ -1,7 +1,5 @@
 import { renderTemplate } from './renderTemplate.js'; // adjust path if necessary
-/* --------------------------------------------------------------------------------------------------
-Loader-Function
----------------------------------------------------------------------------------------------------*/
+
 /**
  * Loads JSON data, an external HTML template and mounts the rendered fragment.
  * @param {string}  dataPath     – URL of the JSON file
