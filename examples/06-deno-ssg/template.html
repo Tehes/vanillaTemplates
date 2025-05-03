@@ -1,8 +1,26 @@
-<h2>Lebenslauf: <var>name</var></h2>
-<p>Position: <var>role</var></p>
-<h3>Skills</h3>
-<ul>
-    <var data-loop="skills">
-        <li><var></var></li>
-    </var>
-</ul>
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>06 – Deno SSG</title>
+</head>
+
+<body>
+    <h1>06 – Deno SSG</h1>
+
+    <template>
+        <h2>CV of <var>name</var></h2>
+        <p>Role: <var>role</var></p>
+        <h3>Skills</h3>
+        <ul>
+            <var data-loop="skills">
+                <li><var></var></li>
+            </var>
+        </ul>
+    </template>
+
+</body>
+
+</html>

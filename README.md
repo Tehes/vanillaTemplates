@@ -271,17 +271,75 @@ loadDataAndTemplate(
 - **Error handling:** if the path given to `data-loop` is not an array, the
   engine throws a descriptive `TypeError`.
 
+## Server-Side Rendering (Static Site Generation)
+
+In addition to client-side rendering, you can use the engine at **build time**
+to generate fully rendered HTML – ideal for static site generation (SSG).
+
+### Key Differences from Client-Side Use
+
+1. **Entire HTML document as template**: The full HTML file (including
+   `<!DOCTYPE>`, `<html>`, `<head>`, and `<body>`) acts as the template.
+2. **Template tags in-place**: `<template>` elements are placed exactly where
+   rendered content should appear and get replaced inline.
+
+### Project Structure
+
+```
+examples/06-deno-ssg/
+├── build.js         → CLI script to generate output
+├── data.json        → Data input
+├── template.html    → Full HTML file with embedded <template>
+├── dist/index.html  → Output (auto-generated)
+```
+
+### Example Template
+
+```html
+<!DOCTYPE html>
+<html lang="de">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>06 – Deno SSG</title>
+    </head>
+
+    <body>
+        <template>
+            <h2>CV of <var>name</var></h2>
+            <p>Role: <var>role</var></p>
+            <h3>Skills</h3>
+            <ul>
+                <var data-loop="skills">
+                    <li><var></var></li>
+                </var>
+            </ul>
+        </template>
+    </body>
+</html>
+```
+
+### Build with Deno
+
+```bash
+deno run --allow-read --allow-write build.js
+```
+
+This will generate a clean, fully rendered `index.html` in the `dist/` folder –
+no JavaScript required on the client.
+
 ---
 
 ## Live Examples
 
-| Nr. | Focus                | Demo                                       |
-| --: | -------------------- | ------------------------------------------ |
-|  01 | Variable Binding     | `examples/01-basic-hello/index.html`       |
-|  02 | Primitive Array Loop | `examples/02-primitive-array/index.html`   |
-|  03 | Attribute Binding    | `examples/03-attribute-binding/index.html` |
-|  04 | Object Array Loop    | `examples/04-object-loop/index.html`       |
-|  05 | Nested Loops         | `examples/05-nested-loops/index.html`      |
+| Nr. | Focus                 | Demo                             |
+| --: | --------------------- | -------------------------------- |
+|  01 | Variable Binding      | `examples/01-basic-hello/`       |
+|  02 | Primitive Array Loop  | `examples/02-primitive-array/`   |
+|  03 | Attribute Binding     | `examples/03-attribute-binding/` |
+|  04 | Object Array Loop     | `examples/04-object-loop/`       |
+|  05 | Nested Loops          | `examples/05-nested-loops/`      |
+|  06 | Server-side Rendering | `examples/06-deno-ssg/dist/`     |
 
 _(Launch a dev server such as `npx serve .` and open the links.)_
 
