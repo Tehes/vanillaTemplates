@@ -1,0 +1,10 @@
+{
+    "name": "Max Mustermann",
+    "role": "Softwareentwickler",
+    "skills": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "Deno"
+    ]
+}
