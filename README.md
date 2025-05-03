@@ -19,64 +19,6 @@ specialized template language.
 - **Zero DOM Footprint**: `<var>` placeholders and loop containers are stripped
   out during rendering, so the final markup contains only your real HTML.
 
-## Live Examples
-
-| Nr. | Focus                | Demo                                       |
-| --: | -------------------- | ------------------------------------------ |
-|  01 | Variable Binding     | `examples/01-basic-hello/index.html`       |
-|  02 | Primitive Array Loop | `examples/02-primitive-array/index.html`   |
-|  03 | Attribute Binding    | `examples/03-attribute-binding/index.html` |
-|  04 | Object Array Loop    | `examples/04-object-loop/index.html`       |
-
-_(Launch a dev server such as `npx serve .` and open the links.)_
-
----
-
-## Nested Loops
-
-```html
-<var data-loop="departments">
-    <h3><var>name</var></h3>
-    <ul>
-        <var data-loop="employees">
-            <li>
-                <var>name</var> – <var>role</var>
-            </li>
-        </var>
-    </ul>
-</var>
-```
-
-This demonstrates two nested `data-loop` levels (departments → employees).
-
----
-
-## Loading external templates & data
-
-Use the helper `loadDataAndTemplate()` found in `js/loader.js` to fetch a JSON
-file and a raw HTML template:
-
-```js
-import { loadDataAndTemplate } from "./js/loader.js";
-
-loadDataAndTemplate(
-    "./data.json", // JSON file
-    "./template.html", // raw HTML template (no <template> wrapper)
-    document.querySelector("#out"), // mount point
-);
-```
-
----
-
-## Robustness
-
-- **XSS‑safe:** placeholder values are injected via `textContent`, so HTML
-  inside your data is not executed.
-- **Error handling:** if the path given to `data-loop` is not an array, the
-  engine throws a descriptive `TypeError`.
-
----
-
 ## Why `<var>`?
 
 HTML already defines the
@@ -203,6 +145,26 @@ This will produce:
 </ul>
 ```
 
+### Nested Loops
+
+Sometimes you need to loop inside a loop – for example, departments ➜ employees:
+
+```html
+<var data-loop="departments">
+    <h3><var>name</var></h3>
+    <ul>
+        <var data-loop="employees">
+            <li>
+                <var>name</var> – <var>role</var>
+            </li>
+        </var>
+    </ul>
+</var>
+```
+
+The engine simply recurses, so each inner `data-loop` uses the item of the outer
+loop as its data context.
+
 ### Empty `<var>` Explained
 
 When you iterate over an array of _primitive_ values, the loop item **is** the
@@ -286,6 +248,43 @@ Using the pipe (`|`) you can set several attributes at once:
 ```html
 <img src="https://example.com/avatar.jpg" alt="Jane Doe">
 ```
+
+## Loading external templates & data
+
+Use the helper `loadDataAndTemplate()` found in `js/loader.js` to fetch a JSON
+file and a raw HTML template:
+
+```js
+import { loadDataAndTemplate } from "./js/loader.js";
+
+loadDataAndTemplate(
+    "./data.json", // JSON file
+    "./template.html", // raw HTML template (no <template> wrapper)
+    document.querySelector("#out"), // mount point
+);
+```
+
+## Robustness
+
+- **XSS‑safe:** placeholder values are injected via `textContent`, so HTML
+  inside your data is not executed.
+- **Error handling:** if the path given to `data-loop` is not an array, the
+  engine throws a descriptive `TypeError`.
+
+---
+
+## Live Examples
+
+| Nr. | Focus                | Demo                                       |
+| --: | -------------------- | ------------------------------------------ |
+|  01 | Variable Binding     | `examples/01-basic-hello/index.html`       |
+|  02 | Primitive Array Loop | `examples/02-primitive-array/index.html`   |
+|  03 | Attribute Binding    | `examples/03-attribute-binding/index.html` |
+|  04 | Object Array Loop    | `examples/04-object-loop/index.html`       |
+
+_(Launch a dev server such as `npx serve .` and open the links.)_
+
+---
 
 ## Conclusion
 
