@@ -1,13 +1,42 @@
 # Vanilla JS Template Engine
 
-A lightweight and simple JavaScript template engine that uses valid HTML syntax and `<var>` elements for data binding. It provides a minimalistic solution to dynamically populate HTML templates with JavaScript data, without needing any specialized template language.
+A lightweight and simple JavaScript template engine that uses valid HTML syntax
+and `<var>` elements for data binding. It provides a minimalistic solution to
+dynamically populate HTML templates with JavaScript data, without needing any
+specialized template language.
 
 ## Features
 
-- **Valid HTML Syntax**: The engine uses standard HTML elements and attributes, with no need for a custom template language or syntax.
-- **Data Binding with `<var>`**: JavaScript object data can be injected into HTML using the `<var>` element.
-- **Loop Support**: The `data-loop` attribute allows iterating over arrays in your data, creating dynamic lists or repeated elements.
-- **Flexible Attribute Binding**: Using the `data-attr` attribute, you can bind JavaScript data directly to any HTML attribute, such as `src`, `href`, or `alt`.
+- **Valid HTML Syntax**: The engine uses standard HTML elements and attributes,
+  with no need for a custom template language or syntax.
+- **Data Binding with `<var>`**: JavaScript object data can be injected into
+  HTML using the `<var>` element.
+- **Loop Support**: The `data-loop` attribute allows iterating over arrays in
+  your data, creating dynamic lists or repeated elements.
+- **Flexible Attribute Binding**: Using the `data-attr` attribute, you can bind
+  JavaScript data directly to any HTML attribute, such as `src`, `href`, or
+  `alt`.
+- **Zero DOM Footprint**: `<var>` placeholders and loop containers are stripped
+  out during rendering, so the final markup contains only your real HTML.
+
+## Why `<var>`?
+
+HTML already defines the
+[`<var>` element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/var)
+for “variables” in a broad sense.\
+Using it as a **placeholder tag** brings three advantages:
+
+1. **Valid Mark‑up** – Your template stays 100 % HTML; no proprietary braces
+   like `{{name}}`.
+2. **Editor Support** – Because it’s a real element, you get syntax
+   highlighting, auto‑closing tags and can nest it anywhere.
+3. **Clean Output** – During rendering, every `<var>` (and any `<var data-loop>`
+   container) is replaced with its resolved content and then removed with
+   `replaceWith`. The browser never sees the placeholder after hydration.
+
+_Tip:_ A `<var>` without inner text but with `data-loop="items"` works as a
+**loop container**. Because it vanishes after rendering, it won’t pollute the
+final DOM.
 
 ## Basic Usage
 
@@ -31,52 +60,61 @@ A lightweight and simple JavaScript template engine that uses valid HTML syntax 
 ### JavaScript Example
 
 ```javascript
-import { renderTemplate } from './vanillaTemplates.js';
+import { renderTemplate } from "./vanillaTemplates.js";
 
 const data = {
     user: {
         name: "John Doe",
         email: "john.doe@example.com",
         avatar: "avatar.jpg",
-        hobbies: ["Reading", "Gaming", "Traveling"]
-    }
+        hobbies: ["Reading", "Gaming", "Traveling"],
+    },
 };
 
-const template = document.getElementById('my-template');
-const container = document.querySelector('#output');
+const template = document.getElementById("my-template");
+const container = document.querySelector("#output");
 
 renderTemplate(template, data, container);
 ```
 
 ## Data Binding
 
-The engine uses `<var>` elements to bind data from JavaScript objects to HTML elements. The text inside the `<var>` tag corresponds to the key or nested key of the object.
+The engine uses `<var>` elements to bind data from JavaScript objects to HTML
+elements. The text inside the `<var>` tag corresponds to the key or nested key
+of the object.
 
 ### Example
 
 ```html
-<var>user.name</var> <!-- This will be replaced by the value of user.name from the data object -->
+<var>user.name</var>
+<!-- This will be replaced by the value of user.name from the data object -->
 ```
 
 ## Looping Over Data
 
-To handle arrays, the engine provides a `data-loop` attribute. When applied to an element, it will iterate over the corresponding array in the data and duplicate the element for each item.
+To handle arrays, the engine provides a `data-loop` attribute. When applied to
+an element, it will iterate over the corresponding array in the data and
+duplicate the element for each item.
 
 ### HTML Loop Example
 
 ```html
 <ul>
-    <li data-loop="user.hobbies"><var></var></li> <!-- Repeats for each hobby in the user.hobbies array -->
+    <var data-loop="user.hobbies">
+        <li><var></var></li>
+    </var>
 </ul>
 ```
+
+<!-- Repeats for each hobby in the user.hobbies array -->
 
 ### Javascript Example
 
 ```javascript
 const data = {
     user: {
-        hobbies: ["Reading", "Gaming", "Traveling"]
-    }
+        hobbies: ["Reading", "Gaming", "Traveling"],
+    },
 };
 
 renderTemplate(template, data, container);
@@ -94,23 +132,27 @@ This will produce:
 
 ## Attribute Binding
 
-The `data-attr` attribute allows you to dynamically set the value of an HTML attribute, such as `src`, `href`, or `alt`.
+The `data-attr` attribute allows you to dynamically set the value of an HTML
+attribute, such as `src`, `href`, or `alt`.
 
 ### Example
 
 ```html
-<img data-attr="src:user.avatar" alt="User Avatar"> <!-- The image source will be set dynamically -->
+<img data-attr="src:user.avatar" alt="User Avatar">
+<!-- The image source will be set dynamically -->
 ```
 
-The syntax for `data-attr` is `data-attr="attribute:dataPath"`, where `attribute` is the HTML attribute you want to set, and `dataPath` is the path to the data in the JavaScript object.
+The syntax for `data-attr` is `data-attr="attribute:dataPath"`, where
+`attribute` is the HTML attribute you want to set, and `dataPath` is the path to
+the data in the JavaScript object.
 
 ### JavaScript Example
 
 ```javascript
 const data = {
     user: {
-        avatar: "https://example.com/avatar.jpg"
-    }
+        avatar: "https://example.com/avatar.jpg",
+    },
 };
 
 renderTemplate(template, data, container);
@@ -124,4 +166,7 @@ This will produce:
 
 ## Conclusion
 
-This Vanilla JS Template Engine is designed to be simple and efficient, leveraging pure HTML and JavaScript to dynamically populate your UI. It avoids the need for complex template languages, providing a lightweight and intuitive way to manage dynamic content in your web applications.
+This Vanilla JS Template Engine is designed to be simple and efficient,
+leveraging pure HTML and JavaScript to dynamically populate your UI. It avoids
+the need for complex template languages, providing a lightweight and intuitive
+way to manage dynamic content in your web applications.

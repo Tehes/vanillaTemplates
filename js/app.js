@@ -1,41 +1,41 @@
 /* --------------------------------------------------------------------------------------------------
 Import
 ---------------------------------------------------------------------------------------------------*/
-import {renderTemplate} from './renderTemplate.js';
+import { renderTemplate } from './renderTemplate.js';
 
 /* --------------------------------------------------------------------------------------------------
 Data
 ---------------------------------------------------------------------------------------------------*/
 
-var persons = {
+const persons = {
     name: {
         first: "Max",
         last: "Mustermann"
     },
     age: "44",
     friends: [{
-            name: "Nils",
-            age: 20
-        },
-        {
-            name: "Teddy",
-            age: 10
-        },
-        {
-            name: "Nelson",
-            age: 40
-        },
+        name: "Nils",
+        age: 20
+    },
+    {
+        name: "Teddy",
+        age: 10
+    },
+    {
+        name: "Nelson",
+        age: 40
+    },
     ],
     hobbies: ["singing", "dancing", "reading", "cycling"],
-    profilePic: "https://www.fillmurray.com/300/300",
+    profilePic: "https://picsum.photos/300/300",
     facebook: "https://de.wikipedia.org/wiki/Bill_Murray"
 };
 
 /* --------------------------------------------------------------------------------------------------
 Variables
 ---------------------------------------------------------------------------------------------------*/
-var personTemplate = document.querySelector("#persons");
-var appendHere = document.querySelector("#here");
+const personTemplate = document.querySelector("#persons");
+const appendHere = document.querySelector("#here");
 
 /* --------------------------------------------------------------------------------------------------
 functions
