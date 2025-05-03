@@ -1,0 +1,41 @@
+{
+    "company": "Acme Corp",
+    "departments": [
+        {
+            "name": "Engineering",
+            "employees": [
+                {
+                    "name": "Alice",
+                    "role": "Frontend Dev",
+                    "skills": [
+                        "HTML",
+                        "CSS",
+                        "JavaScript"
+                    ]
+                },
+                {
+                    "name": "Bob",
+                    "role": "Backend Dev",
+                    "skills": [
+                        "Node.js",
+                        "SQL"
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Marketing",
+            "employees": [
+                {
+                    "name": "Clara",
+                    "role": "SEO Specialist",
+                    "skills": [
+                        "Analytics",
+                        "Content",
+                        "Keyword research"
+                    ]
+                }
+            ]
+        }
+    ]
+}

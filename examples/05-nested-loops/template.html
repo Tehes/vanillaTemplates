@@ -1,0 +1,22 @@
+<h2>Company: <var>company</var></h2>
+
+<!-- 1st loop: departments -->
+<var data-loop="departments">
+    <h3>Department: <var>name</var></h3>
+
+    <!-- 2nd loop: employees -->
+    <ul>
+        <var data-loop="employees">
+            <li>
+                <strong><var>name</var></strong>
+                – <var>role</var>
+                <!-- 3rd loop: skills -->
+                <ul>
+                    <var data-loop="skills">
+                        <li><var></var></li>
+                    </var>
+                </ul>
+            </li>
+        </var>
+    </ul>
+</var>

@@ -281,6 +281,7 @@ loadDataAndTemplate(
 |  02 | Primitive Array Loop | `examples/02-primitive-array/index.html`   |
 |  03 | Attribute Binding    | `examples/03-attribute-binding/index.html` |
 |  04 | Object Array Loop    | `examples/04-object-loop/index.html`       |
+|  05 | Nested Loops         | `examples/05-nested-loops/index.html`      |
 
 _(Launch a dev server such as `npx serve .` and open the links.)_
 
