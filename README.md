@@ -181,42 +181,51 @@ attribute, such as `src`, `href`, or `alt`.
 You can bind **multiple attributes at once** by separating each
 `attribute:dataPath` pair with a pipe character (`|`):
 
+### Single‑Attribute Example
+
+```html
+<img data-attr="src:user.avatar">
+<!-- The image source will be set dynamically -->
+```
+
+**Data**
+
+```json
+{
+    "user": {
+        "avatar": "https://example.com/avatar.jpg"
+    }
+}
+```
+
+**Result**
+
+```html
+<img src="https://example.com/avatar.jpg">
+```
+
+### Multiple‑Attribute Example
+
+Using the pipe (`|`) you can set several attributes at once:
+
 ```html
 <img data-attr="src:user.avatar|alt:user.name">
 ```
 
-### Example
+**Data**
 
-```html
-<img data-attr="src:user.avatar" alt="User Avatar">
-<!-- The image source will be set dynamically -->
+```json
+{
+    "user": {
+        "avatar": "https://example.com/avatar.jpg",
+        "name": "Jane Doe"
+    }
+}
 ```
 
-The basic syntax of `data-attr` is `data-attr="attribute:dataPath"`, where
-`attribute` is the HTML attribute you want to set and `dataPath` is the path
-inside your JavaScript object.\
-Multiple pairs can be chained with `|`.
-
-### JavaScript Example
-
-```javascript
-const data = {
-    user: {
-        avatar: "https://example.com/avatar.jpg",
-    },
-};
-
-renderTemplate(template, data, container);
-```
-
-This will produce:
+**Result**
 
 ```html
-<img src="https://example.com/avatar.jpg" alt="User Avatar">
-```
-
-```html
-<!-- With multiple bindings -->
 <img src="https://example.com/avatar.jpg" alt="Jane Doe">
 ```
 
