@@ -34,9 +34,24 @@ Using it as a **placeholder tag** brings three advantages:
    container) is replaced with its resolved content and then removed with
    `replaceWith`. The browser never sees the placeholder after hydration.
 
-_Tip:_ A `<var>` without inner text but with `data-loop="items"` works as a
-**loop container**. Because it vanishes after rendering, it won’t pollute the
-final DOM.
+**Tip:** Two special cases use empty `<var>` tags:
+
+1. **Loop container**\
+   A `<var>` that carries `data-loop="items"` but no inner text works as the
+   wrapper that gets duplicated. After rendering, the wrapper vanishes – your
+   DOM stays clean.
+
+2. **Primitive array item**\
+   Inside a loop over an array of primitive values (strings, numbers …), leave
+   the inner `<var>` empty. The engine will substitute it with the _current
+   item_.
+
+   ```html
+   <var data-loop="user.hobbies">
+       <li><var></var></li>
+   </var>
+   <!-- produces <li>Reading</li> … -->
+   ```
 
 ## Basic Usage
 
@@ -128,6 +143,34 @@ This will produce:
     <li>Gaming</li>
     <li>Traveling</li>
 </ul>
+```
+
+### Empty `<var>` Explained
+
+When you iterate over an array of _primitive_ values, the loop item **is** the
+value, not an object with keys.\
+An empty `<var></var>` therefore means “inject the current item itself”.
+
+```html
+<var data-loop="colors">
+    <span style="background-color: <var></var>"><var></var></span>
+</var>
+```
+
+With
+
+```js
+{
+    colors: ["red", "green", "blue"];
+}
+```
+
+this renders as:
+
+```html
+<span style="background-color: red">red</span>
+<span style="background-color: green">green</span>
+<span style="background-color: blue">blue</span>
 ```
 
 ## Attribute Binding
