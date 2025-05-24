@@ -1,5 +1,5 @@
 /* --------------------------------------------------------------------------------------------------
-Version: 0.11.0
+Version: 0.12.0
 
 Simple Vanilla JS template engine
     - completely valid HTML syntax
@@ -56,6 +56,23 @@ function walk(node, ctx) {
         if (child.nodeType === Node.ELEMENT_NODE) {
             const el = /** @type {HTMLElement} */ (child);
 
+            /* --- data-if -------------------------------------------------- */
+            if (el.dataset.if) {
+                let expr = el.dataset.if.trim();
+                let invert = false;
+                if (expr.startsWith('!')) {
+                    invert = true;
+                    expr = expr.slice(1);
+                }
+                const raw = chainProps(ctx, expr);
+                let cond = Boolean(raw);
+                if (invert) cond = !cond;
+                el.removeAttribute('data-if');
+                if (!cond) {
+                    el.remove();
+                    return;
+                }
+            }
             /* --- data-loop -------------------------------------------------- */
             if (el.dataset.loop) {
                 const arr = chainProps(ctx, el.dataset.loop);

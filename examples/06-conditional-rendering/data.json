@@ -1,0 +1,16 @@
+{
+    "todos": [
+        {
+            "task": "Write docs",
+            "done": true
+        },
+        {
+            "task": "Publish release",
+            "done": false
+        },
+        {
+            "task": "Clean up codebase",
+            "done": false
+        }
+    ]
+}

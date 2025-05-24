@@ -281,6 +281,42 @@ Using the pipe (`|`) you can set several attributes at once:
 <img src="https://example.com/avatar.jpg" alt="Jane Doe">
 ```
 
+## Conditional Rendering
+
+With `data-if`, you can conditionally render elements based on boolean values.
+If the condition is falsy, the element will be removed entirely.
+
+### Example
+
+```html
+<ul>
+    <var data-loop="todos">
+        <li data-if="done">✔ <var>task</var></li>
+        <li data-if="!done">✖ <var>task</var></li>
+    </var>
+</ul>
+```
+
+```json
+{
+    "todos": [
+        { "task": "Write docs", "done": true },
+        { "task": "Publish release", "done": false },
+        { "task": "Clean up code", "done": false }
+    ]
+}
+```
+
+This will produce:
+
+```html
+<ul>
+    <li>✔ Write docs</li>
+    <li>✖ Publish release</li>
+    <li>✖ Clean up code</li>
+</ul>
+```
+
 ## Loading external templates & data
 
 Use the helper `loadDataAndTemplate()` found in `js/loader.js` to fetch a JSON
@@ -364,14 +400,15 @@ no JavaScript required on the client.
 
 ## Live Examples
 
-| Nr. | Focus                 | Demo                             |
-| --- | --------------------- | -------------------------------- |
-| 01  | Basic Hello           | `examples/01-basic-hello/`       |
-| 02  | Primitive Array       | `examples/02-primitive-array/`   |
-| 03  | Attribute Binding     | `examples/03-attribute-binding/` |
-| 04  | Object Loop           | `examples/04-object-loop/`       |
-| 05  | Nested Loops          | `examples/05-nested-loops/`      |
-| 06  | Server-side Rendering | `examples/06-deno-ssg/dist/`     |
+| Nr. | Focus                 | Demo                                 |
+| --- | --------------------- | ------------------------------------ |
+| 01  | Basic Hello           | `examples/01-basic-hello/`           |
+| 02  | Primitive Array       | `examples/02-primitive-array/`       |
+| 03  | Attribute Binding     | `examples/03-attribute-binding/`     |
+| 04  | Object Loop           | `examples/04-object-loop/`           |
+| 05  | Nested Loops          | `examples/05-nested-loops/`          |
+| 06  | Conditional Rendering | `examples/07-conditional-rendering/` |
+| 07  | Server-side Rendering | `examples/06-deno-ssg/dist/`         |
 
 _(Launch a dev server such as `npx serve .` and open the links.)_
 
