@@ -58,22 +58,27 @@ Using it as a **placeholder tag** brings three advantages:
 ### HTML Template Example
 
 ```html
-<template>
-    <h2>Hallo <var>name</var>!</h2>
-    <p>Du hast <var>todos.length</var> To‑do(s).</p>
-</template>
+<h2>Hello <var>name</var>!</h2>
+<p>You got <var>todos.length</var> To-do(s).</p>
 ```
 
-### JavaScript Example
+### JSON Example
 
-```javascript
-import { loadDataAndTemplate } from "./browser/loader.js";
+```json
+{
+    "name": "John Doe",
+    "todos": [
+        "read documentation",
+        "drink green tea"
+    ]
+}
+```
 
-loadDataAndTemplate(
-    "./data.json", // JSON data
-    "./template.html", // Raw HTML template
-    document.querySelector("#out"), // mount point
-);
+This will produce:
+
+```html
+<h2>Hello John Doe!</h2>
+<p>Du hast 2 To-do(s).</p>
 ```
 
 ## Data Binding
@@ -99,7 +104,7 @@ duplicate the element for each item.
 
 ```html
 <ul>
-    <var data-loop="user.hobbies">
+    <var data-loop="todos">
         <li><var></var></li>
     </var>
 </ul>
@@ -107,25 +112,27 @@ duplicate the element for each item.
 
 <!-- Repeats for each hobby in the user.hobbies array -->
 
-### Javascript Example
+### JSON Example
 
-```javascript
-const data = {
-    user: {
-        hobbies: ["Reading", "Gaming", "Traveling"],
-    },
-};
-
-renderTemplate(template, data, container);
+```json
+{
+    "todos": [
+        "Read documentation",
+        "Make green tea",
+        "Write code",
+        "Deploy app"
+    ]
+}
 ```
 
 This will produce:
 
 ```html
 <ul>
-    <li>Reading</li>
-    <li>Gaming</li>
-    <li>Traveling</li>
+    <li>Read documentation</li>
+    <li>Make green tea</li>
+    <li>Write code</li>
+    <li>Deploy app</li>
 </ul>
 ```
 
@@ -156,25 +163,29 @@ value, not an object with keys.\
 An empty `<var></var>` therefore means “inject the current item itself”.
 
 ```html
-<var data-loop="colors">
-    <span style="background-color: <var></var>"><var></var></span>
-</var>
+<div class="badges">
+    <var data-loop="badges">
+        <span class="badge"><var></var></span>
+    </var>
+</div>
 ```
 
 With
 
-```js
+```json
 {
-    colors: ["red", "green", "blue"];
+    "badges": ["New", "Sale", "Featured"]
 }
 ```
 
 this renders as:
 
 ```html
-<span style="background-color: red">red</span>
-<span style="background-color: green">green</span>
-<span style="background-color: blue">blue</span>
+<div class="badges">
+    <span class="badge">New</span>
+    <span class="badge">Sale</span>
+    <span class="badge">Featured</span>
+</div>
 ```
 
 ## Attribute Binding
@@ -206,6 +217,43 @@ You can bind **multiple attributes at once** by separating each
 
 ```html
 <img src="https://example.com/avatar.jpg">
+```
+
+## Style Binding
+
+The `data-style` attribute allows you to dynamically set CSS style properties.
+Separate multiple declarations with `|` using the format `property:dataPath`.
+
+### Example
+
+```html
+<a
+    data-attr="href:href"
+    data-style="color:textColor|background-color:bgColor|padding:padding"
+>
+    <var>label</var>
+</a>
+```
+
+```json
+{
+    "href": "https://example.com",
+    "textColor": "#ffffff",
+    "bgColor": "#007bff",
+    "padding": "0.5em 1em",
+    "label": "Click me"
+}
+```
+
+this renders as:
+
+```html
+<a
+    href="https://example.com"
+    style="color: #ffffff; background-color: #007bff; padding: 0.5em 1em"
+>
+    Click me
+</a>
 ```
 
 ### Multiple‑Attribute Example

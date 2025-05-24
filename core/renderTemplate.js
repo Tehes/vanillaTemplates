@@ -3,8 +3,8 @@ Version: 0.10.1
 
 Simple Vanilla JS template engine
     - completely valid HTML syntax
-        - no mustaches or other logic to learn
-            - uses the <var> element for variables
+    - no mustaches or other logic to learn
+    - uses the <var> element for variables
 
 github repo @https://github.com/Tehes/vanillaTemplates
 ---------------------------------------------------------------------------------------------------*/
@@ -72,6 +72,20 @@ function walk(node, ctx) {
 
                 el.remove(); // drop original loop container
                 return;      // loop handled – skip further processing
+            }
+
+            /* --- data-style -------------------------------------------------- */
+            if (el.dataset.style) {
+                el.dataset.style
+                    .split('|')
+                    .forEach(pair => {
+                        const [prop, path] = pair.split(':');
+                        const value = chainProps(ctx, path);
+                        if (value != null) {
+                            el.style.setProperty(prop, value);
+                        }
+                    });
+                el.removeAttribute('data-style');
             }
 
             /* --- data-attr -------------------------------------------------- */

@@ -2,5 +2,11 @@
     "name": "Jane Doe",
     "title": "Frontend Developer",
     "avatar": "https://i.pravatar.cc/120?img=56",
-    "website": "https://www.example.com"
+    "website": "https://www.example.com",
+    "bgColor": "#f9f9f9",
+    "cardBorder": "1px solid #ccc",
+    "padding": "1em",
+    "headingColor": "#333333",
+    "avatarRadius": "50%",
+    "linkColor": "#1e90ff"
 }
