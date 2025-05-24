@@ -1,5 +1,5 @@
 /* --------------------------------------------------------------------------------------------------
-Version: 0.10.1
+Version: 0.11.0
 
 Simple Vanilla JS template engine
     - completely valid HTML syntax
