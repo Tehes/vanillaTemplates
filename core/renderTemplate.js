@@ -62,7 +62,7 @@ function walk(node, ctx) {
                 let invert = false;
                 if (expr.startsWith('!')) {
                     invert = true;
-                    expr = expr.slice(1);
+                    expr = expr.slice(1).trim();
                 }
                 const raw = chainProps(ctx, expr);
                 let cond = Boolean(raw);
@@ -70,6 +70,14 @@ function walk(node, ctx) {
                 el.removeAttribute('data-if');
                 if (!cond) {
                     el.remove();
+                    return; // remove falsy block
+                }
+                // For <var> wrappers, unwrap children and continue processing them
+                if (el.tagName === 'VAR') {
+                    const children = [...el.childNodes];
+                    el.before(...children);
+                    el.remove();
+                    children.forEach(child => walk(child, ctx));
                     return;
                 }
             }

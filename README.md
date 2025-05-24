@@ -291,8 +291,12 @@ If the condition is falsy, the element will be removed entirely.
 ```html
 <ul>
     <var data-loop="todos">
-        <li data-if="done">✔ <var>task</var></li>
-        <li data-if="!done">✖ <var>task</var></li>
+        <var data-if="done">
+            <li>✔ <var>task</var></li>
+        </var>
+        <var data-if="!done">
+            <li>✖ <var>task</var></li>
+        </var>
     </var>
 </ul>
 ```
@@ -316,6 +320,45 @@ This will produce:
     <li>✖ Clean up code</li>
 </ul>
 ```
+
+## Wrapper vs Direct Directives
+
+Your template engine supports applying directives either directly to real DOM
+elements or using `<var>` wrappers when grouping is needed. This applies to both
+loops and conditionals.
+
+- **Direct Directive on Element**\
+  Attach directives like `data-loop`, `data-if`, `data-attr`, or `data-style`
+  directly to the element you wish to repeat, show/hide, or bind
+  attributes/styles to:
+
+  ```html
+  <!-- Loop: single <li> per item -->
+  <li data-loop="todos"><var>task</var></li>
+
+  <!-- Conditional: show this div if isAdmin is true -->
+  <div data-if="isAdmin">Admin Panel</div>
+  ```
+
+- **Wrapper with `<var>`**\
+  Use a `<var>` wrapper when you need to apply a directive to multiple sibling
+  nodes or a mixed set of elements as a group:
+
+  ```html
+  <!-- Loop: repeat both <li> and <hr> for each item -->
+  <var data-loop="todos">
+      <li><var>task</var></li>
+      <hr>
+  </var>
+
+  <!-- Conditional: wrap several elements together -->
+  <var data-if="!isGuest">
+      <h2>Welcome back!</h2>
+      <button>Logout</button>
+  </var>
+  ```
+
+The wrapper is removed after rendering, leaving only its children in the DOM.
 
 ## Loading external templates & data
 
