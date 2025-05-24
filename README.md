@@ -58,38 +58,22 @@ Using it as a **placeholder tag** brings three advantages:
 ### HTML Template Example
 
 ```html
-<template id="user-template">
-    <div class="user">
-        <h2><var>user.name</var></h2>
-        <p>Email: <var>user.email</var></p>
-        <img data-attr="src:user.avatar" alt="User Avatar">
-        <ul>
-            <var data-loop="user.hobbies">
-                <li><var></var></li>
-            </var>
-        </ul>
-    </div>
+<template>
+    <h2>Hallo <var>name</var>!</h2>
+    <p>Du hast <var>todos.length</var> To‑do(s).</p>
 </template>
 ```
 
 ### JavaScript Example
 
 ```javascript
-import { renderTemplate } from "./vanillaTemplates.js";
+import { loadDataAndTemplate } from "./browser/loader.js";
 
-const data = {
-    user: {
-        name: "John Doe",
-        email: "john.doe@example.com",
-        avatar: "avatar.jpg",
-        hobbies: ["Reading", "Gaming", "Traveling"],
-    },
-};
-
-const template = document.getElementById("my-template");
-const container = document.querySelector("#output");
-
-renderTemplate(template, data, container);
+loadDataAndTemplate(
+    "./data.json", // JSON data
+    "./template.html", // Raw HTML template
+    document.querySelector("#out"), // mount point
+);
 ```
 
 ## Data Binding
@@ -332,14 +316,11 @@ no JavaScript required on the client.
 
 ## Live Examples
 
-| Nr. | Focus                 | Demo                             |
-| --: | --------------------- | -------------------------------- |
-|  01 | Variable Binding      | `examples/01-basic-hello/`       |
-|  02 | Primitive Array Loop  | `examples/02-primitive-array/`   |
-|  03 | Attribute Binding     | `examples/03-attribute-binding/` |
-|  04 | Object Array Loop     | `examples/04-object-loop/`       |
-|  05 | Nested Loops          | `examples/05-nested-loops/`      |
-|  06 | Server-side Rendering | `examples/06-deno-ssg/dist/`     |
+| Nr. | Focus | Demo | | 01 | Basic Hello | `examples/01-basic-hello/` | | 02 |
+Primitive Array | `examples/02-primitive-array/` | | 03 | Attribute Binding |
+`examples/03-attribute-binding/` | | 04 | Object Loop |
+`examples/04-object-loop/` | | 05 | Nested Loops | `examples/05-nested-loops/` |
+| 06 | Server-side Rendering | `examples/06-deno-ssg/dist/` |
 
 _(Launch a dev server such as `npx serve .` and open the links.)_
 
