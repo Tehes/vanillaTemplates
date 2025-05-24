@@ -407,8 +407,8 @@ no JavaScript required on the client.
 | 03  | Attribute Binding     | `examples/03-attribute-binding/`     |
 | 04  | Object Loop           | `examples/04-object-loop/`           |
 | 05  | Nested Loops          | `examples/05-nested-loops/`          |
-| 06  | Conditional Rendering | `examples/07-conditional-rendering/` |
-| 07  | Server-side Rendering | `examples/06-deno-ssg/dist/`         |
+| 06  | Conditional Rendering | `examples/06-conditional-rendering/` |
+| 07  | Server-side Rendering | `examples/07-deno-ssg/dist/`         |
 
 _(Launch a dev server such as `npx serve .` and open the links.)_
 
