@@ -78,7 +78,7 @@ This will produce:
 
 ```html
 <h2>Hello John Doe!</h2>
-<p>Du hast 2 To-do(s).</p>
+<p>You got 2 To-do(s).</p>
 ```
 
 ## Data Binding
@@ -364,11 +364,14 @@ no JavaScript required on the client.
 
 ## Live Examples
 
-| Nr. | Focus | Demo | | 01 | Basic Hello | `examples/01-basic-hello/` | | 02 |
-Primitive Array | `examples/02-primitive-array/` | | 03 | Attribute Binding |
-`examples/03-attribute-binding/` | | 04 | Object Loop |
-`examples/04-object-loop/` | | 05 | Nested Loops | `examples/05-nested-loops/` |
-| 06 | Server-side Rendering | `examples/06-deno-ssg/dist/` |
+| Nr. | Focus                 | Demo                             |
+| --- | --------------------- | -------------------------------- |
+| 01  | Basic Hello           | `examples/01-basic-hello/`       |
+| 02  | Primitive Array       | `examples/02-primitive-array/`   |
+| 03  | Attribute Binding     | `examples/03-attribute-binding/` |
+| 04  | Object Loop           | `examples/04-object-loop/`       |
+| 05  | Nested Loops          | `examples/05-nested-loops/`      |
+| 06  | Server-side Rendering | `examples/06-deno-ssg/dist/`     |
 
 _(Launch a dev server such as `npx serve .` and open the links.)_
 
