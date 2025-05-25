@@ -139,18 +139,25 @@ This will produce:
 ### Looping over Object Properties
 
 `data-loop` also accepts a plain object.\
-Inside such a loop you get three helper keys:
+Inside such a loop you get five helper keys:
 
 | Helper                         | Meaning                        |
 | ------------------------------ | ------------------------------ |
 | `_key`                         | current property name          |
 | `_value` (empty `<var></var>`) | current value (for primitives) |
-| `_index`                       | zero‑based counter             |
+| `_index`                       | zero-based counter             |
+| `_first`                       | `true` for the first entry     |
+| `_last`                        | `true` for the last entry      |
 
 ```html
-<dl>
+<dl class="settings-list">
     <var data-loop="settings">
-        <dt><var>_key</var></dt>
+        <dt>
+            <strong>#<var>_index</var></strong>
+            — <var>_key</var>
+            <span data-if="_first">(first)</span>
+            <span data-if="_last">(last)</span>:
+        </dt>
         <dd><var></var></dd>
     </var>
 </dl>
@@ -161,7 +168,10 @@ Inside such a loop you get three helper keys:
     "settings": {
         "theme": "dark",
         "language": "de",
-        "itemsPerPage": 20
+        "itemsPerPage": 20,
+        "autoSave": true,
+        "welcomeMessage": "Hello, Tino!",
+        "maxUploadSizeMB": 50
     }
 }
 ```
@@ -169,13 +179,42 @@ Inside such a loop you get three helper keys:
 renders as:
 
 ```html
-<dl>
-    <dt>theme</dt>
+<dl class="settings-list">
+    <dt>
+        <strong>#0</strong>
+        — theme <span>(first)</span>:
+    </dt>
     <dd>dark</dd>
-    <dt>language</dt>
+
+    <dt>
+        <strong>#1</strong>
+        — language:
+    </dt>
     <dd>de</dd>
-    <dt>itemsPerPage</dt>
+
+    <dt>
+        <strong>#2</strong>
+        — itemsPerPage:
+    </dt>
     <dd>20</dd>
+
+    <dt>
+        <strong>#3</strong>
+        — autoSave:
+    </dt>
+    <dd>true</dd>
+
+    <dt>
+        <strong>#4</strong>
+        — welcomeMessage:
+    </dt>
+    <dd>Hello, Tino!</dd>
+
+    <dt>
+        <strong>#5</strong>
+        — maxUploadSizeMB <span>(last)</span>:
+    </dt>
+    <dd>50</dd>
 </dl>
 ```
 

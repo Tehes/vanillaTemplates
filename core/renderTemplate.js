@@ -94,19 +94,33 @@ function walk(node, ctx) {
                 };
 
                 if (Array.isArray(src)) {
+                    const len = src.length;
                     src.forEach((item, idx) => {
-                        const itemCtx =
-                            item && typeof item === 'object'
-                                ? { ...item, _index: idx }
-                                : { _value: item, _index: idx };
+                        const baseCtx = (item && typeof item === 'object')
+                            ? { ...item }
+                            : { _value: item };
+                        const itemCtx = {
+                            ...baseCtx,
+                            _index: idx,
+                            _first: idx === 0,
+                            _last: idx === len - 1
+                        };
                         processItem(itemCtx);
                     });
                 } else if (src && typeof src === 'object') {
-                    Object.entries(src).forEach(([key, val], idx) => {
-                        const itemCtx =
-                            val && typeof val === 'object'
-                                ? { ...val, _key: key, _index: idx }
-                                : { _key: key, _value: val, _index: idx };
+                    const entries = Object.entries(src);
+                    const len = entries.length;
+                    entries.forEach(([key, val], idx) => {
+                        const baseCtx = (val && typeof val === 'object')
+                            ? { ...val }
+                            : { _value: val };
+                        const itemCtx = {
+                            ...baseCtx,
+                            _key: key,
+                            _index: idx,
+                            _first: idx === 0,
+                            _last: idx === len - 1
+                        };
                         processItem(itemCtx);
                     });
                 } else {

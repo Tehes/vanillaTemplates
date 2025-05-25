@@ -2,6 +2,9 @@
     "settings": {
         "theme": "dark",
         "language": "de",
-        "itemsPerPage": 20
+        "itemsPerPage": 20,
+        "autoSave": true,
+        "welcomeMessage": "Hello, Tino!",
+        "maxUploadSizeMB": 50
     }
 }
