@@ -1,5 +1,5 @@
 /* --------------------------------------------------------------------------------------------------
-Version: 0.12.0
+Version: 0.13.0
 
 Simple Vanilla JS template engine
     - completely valid HTML syntax
@@ -83,17 +83,37 @@ function walk(node, ctx) {
             }
             /* --- data-loop -------------------------------------------------- */
             if (el.dataset.loop) {
-                const arr = chainProps(ctx, el.dataset.loop);
-                if (!Array.isArray(arr)) {
-                    throw new TypeError(`data for "${el.dataset.loop}" must be an array`);
-                }
+                const src = chainProps(ctx, el.dataset.loop);
 
-                arr.forEach(item => {
+                // Helper: clone element, recurse with new ctx, unwrap children
+                const processItem = (itemCtx) => {
                     const clone = el.cloneNode(true);
-                    clone.removeAttribute('data-loop'); // avoid re‑entering
-                    walk(clone, item);                  // recurse with loop item
-                    el.before(...clone.childNodes);     // unwrap clone content
-                });
+                    clone.removeAttribute('data-loop');
+                    walk(clone, itemCtx);
+                    el.before(...clone.childNodes);
+                };
+
+                if (Array.isArray(src)) {
+                    src.forEach((item, idx) => {
+                        const itemCtx =
+                            item && typeof item === 'object'
+                                ? { ...item, _index: idx }
+                                : { _value: item, _index: idx };
+                        processItem(itemCtx);
+                    });
+                } else if (src && typeof src === 'object') {
+                    Object.entries(src).forEach(([key, val], idx) => {
+                        const itemCtx =
+                            val && typeof val === 'object'
+                                ? { ...val, _key: key, _index: idx }
+                                : { _key: key, _value: val, _index: idx };
+                        processItem(itemCtx);
+                    });
+                } else {
+                    throw new TypeError(
+                        `data for "${el.dataset.loop}" must be array or object`
+                    );
+                }
 
                 el.remove(); // drop original loop container
                 return;      // loop handled – skip further processing
@@ -128,7 +148,11 @@ function walk(node, ctx) {
             if (el.tagName === 'VAR') {
                 const path = el.textContent.trim();
                 const value =
-                    path === '' ? ctx : chainProps(ctx, path);
+                    path === ''
+                        ? (ctx && typeof ctx === 'object' && '_value' in ctx
+                            ? ctx._value
+                            : ctx)
+                        : chainProps(ctx, path);
                 el.replaceWith(document.createTextNode(value ?? ''));
                 return; // placeholder resolved – do not walk children
             }

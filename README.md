@@ -136,6 +136,49 @@ This will produce:
 </ul>
 ```
 
+### Looping over Object Properties
+
+`data-loop` also accepts a plain object.\
+Inside such a loop you get three helper keys:
+
+| Helper                         | Meaning                        |
+| ------------------------------ | ------------------------------ |
+| `_key`                         | current property name          |
+| `_value` (empty `<var></var>`) | current value (for primitives) |
+| `_index`                       | zero‑based counter             |
+
+```html
+<dl>
+    <var data-loop="settings">
+        <dt><var>_key</var></dt>
+        <dd><var></var></dd>
+    </var>
+</dl>
+```
+
+```json
+{
+    "settings": {
+        "theme": "dark",
+        "language": "de",
+        "itemsPerPage": 20
+    }
+}
+```
+
+renders as:
+
+```html
+<dl>
+    <dt>theme</dt>
+    <dd>dark</dd>
+    <dt>language</dt>
+    <dd>de</dd>
+    <dt>itemsPerPage</dt>
+    <dd>20</dd>
+</dl>
+```
+
 ### Nested Loops
 
 Sometimes you need to loop inside a loop – for example, departments ➜ employees:
@@ -448,10 +491,11 @@ no JavaScript required on the client.
 | 01  | Basic Hello           | `examples/01-basic-hello/`           |
 | 02  | Primitive Array       | `examples/02-primitive-array/`       |
 | 03  | Attribute Binding     | `examples/03-attribute-binding/`     |
-| 04  | Object Loop           | `examples/04-object-loop/`           |
-| 05  | Nested Loops          | `examples/05-nested-loops/`          |
-| 06  | Conditional Rendering | `examples/06-conditional-rendering/` |
-| 07  | Server-side Rendering | `examples/07-deno-ssg/dist/`         |
+| 04  | Object Array Loop     | `examples/04-object-array/`          |
+| 05  | Object Map Loop       | `examples/05-object-map/`            |
+| 06  | Nested Loops          | `examples/06-nested-loops/`          |
+| 07  | Conditional Rendering | `examples/07-conditional-rendering/` |
+| 08  | Server-side Rendering | `examples/08-deno-ssg/dist/`         |
 
 _(Launch a dev server such as `npx serve .` and open the links.)_
 
