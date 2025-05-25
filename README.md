@@ -141,13 +141,13 @@ This will produce:
 `data-loop` also accepts a plain object.\
 Inside such a loop you get five helper keys:
 
-| Helper                         | Meaning                        |
-| ------------------------------ | ------------------------------ |
-| `_key`                         | current property name          |
-| `_value` (empty `<var></var>`) | current value (for primitives) |
-| `_index`                       | zero-based counter             |
-| `_first`                       | `true` for the first entry     |
-| `_last`                        | `true` for the last entry      |
+| Helper                            | Meaning                        |
+| --------------------------------- | ------------------------------ |
+| `_key`                            | current property name          |
+| `_value` (or empty `<var></var>`) | current value (for primitives) |
+| `_index`                          | zero-based counter             |
+| `_first`                          | `true` for the first entry     |
+| `_last`                           | `true` for the last entry      |
 
 ```html
 <dl class="settings-list">
@@ -216,6 +216,100 @@ renders as:
     </dt>
     <dd>50</dd>
 </dl>
+```
+
+`````markdown
+````markdown
+### Advanced Example
+
+This example focuses on how the object-map loop exposes `_key` and `_value` (an
+array) so you can nest a second loop over each section’s items.
+
+```json
+{
+    "sections": {
+        "Work Experience": [
+            {
+                "title": "Senior Software Engineer",
+                "company": "Acme Tech Co.",
+                "period": "Jan 2021 – Present"
+            },
+            {
+                "title": "Full-Stack Developer",
+                "company": "Bright Solutions LLC",
+                "period": "Jun 2018 – Dec 2020"
+            }
+        ],
+        "Education": [
+            {
+                "title": "M.Sc. Computer Science, University of Westshire",
+                "period": "Sep 2016 – May 2018"
+            },
+            {
+                "title": "B.Sc. Information Technology, Eastfield College",
+                "period": "Sep 2012 – May 2016"
+            }
+        ]
+    }
+}
+```
+````
+`````
+
+```html
+<!-- Outer loop: iterate object map of sections -->
+<var data-loop="sections">
+    <section>
+        <!-- Section title from the key -->
+        <h3><var>_key</var></h3>
+
+        <!-- Inner loop: iterate the array in _value -->
+        <ul>
+            <var data-loop="_value">
+                <li>
+                    <strong><var>title</var></strong>
+                    <var data-if="company"> @ <var>company</var></var>
+                    <br>
+                    <small><var>period</var></small>
+                </li>
+            </var>
+        </ul>
+    </section>
+</var>
+```
+
+renders as:
+
+```html
+<section>
+    <h3>Work Experience</h3>
+    <ul>
+        <li>
+            <strong>Senior Software Engineer</strong> @ Acme Tech Co.<br>
+            <small>Jan 2021 – Present</small>
+        </li>
+        <li>
+            <strong>Full-Stack Developer</strong> @ Bright Solutions LLC<br>
+            <small>Jun 2018 – Dec 2020</small>
+        </li>
+    </ul>
+</section>
+
+<section>
+    <h3>Education</h3>
+    <ul>
+        <li>
+            <strong>M.Sc. Computer Science, University of Westshire</strong>
+            <br>
+            <small>Sep 2016 – May 2018</small>
+        </li>
+        <li>
+            <strong>B.Sc. Information Technology, Eastfield College</strong>
+            <br>
+            <small>Sep 2012 – May 2016</small>
+        </li>
+    </ul>
+</section>
 ```
 
 ### Nested Loops
@@ -557,16 +651,17 @@ no JavaScript required on the client.
 
 ## Live Examples
 
-| Nr. | Focus                 | Demo                                 |
-| --- | --------------------- | ------------------------------------ |
-| 01  | Basic Hello           | `examples/01-basic-hello/`           |
-| 02  | Primitive Array       | `examples/02-primitive-array/`       |
-| 03  | Attribute Binding     | `examples/03-attribute-binding/`     |
-| 04  | Object Array Loop     | `examples/04-object-array/`          |
-| 05  | Object Map Loop       | `examples/05-object-map/`            |
-| 06  | Nested Loops          | `examples/06-nested-loops/`          |
-| 07  | Conditional Rendering | `examples/07-conditional-rendering/` |
-| 08  | Server-side Rendering | `examples/08-deno-ssg/dist/`         |
+| Nr. | Focus                   | Demo                                 |
+| --- | ----------------------- | ------------------------------------ |
+| 01  | Basic Hello             | `examples/01-basic-hello/`           |
+| 02  | Primitive Array         | `examples/02-primitive-array/`       |
+| 03  | Attribute Binding       | `examples/03-attribute-binding/`     |
+| 04  | Conditional Rendering   | `examples/04-conditional-rendering/` |
+| 05  | Object Array Loop       | `examples/05-object-array/`          |
+| 06  | Object Map Loop         | `examples/06-object-map/`            |
+| 07  | Nested Loops            | `examples/07-nested-loops/`          |
+| 08  | Nested Object-Map Loops | `examples/08-nested-object-map/`     |
+| 09  | Server-side Rendering   | `examples/09-deno-ssg/dist/`         |
 
 _(Launch a dev server such as `npx serve .` and open the links.)_
 

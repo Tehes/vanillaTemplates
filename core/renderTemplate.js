@@ -108,19 +108,14 @@ function walk(node, ctx) {
                         processItem(itemCtx);
                     });
                 } else if (src && typeof src === 'object') {
-                    const entries = Object.entries(src);
-                    const len = entries.length;
-                    entries.forEach(([key, val], idx) => {
-                        const baseCtx = (val && typeof val === 'object')
-                            ? { ...val }
-                            : { _value: val };
-                        const itemCtx = {
-                            ...baseCtx,
-                            _key: key,
-                            _index: idx,
-                            _first: idx === 0,
-                            _last: idx === len - 1
-                        };
+                    Object.entries(src).forEach(([key, val], idx) => {
+                        // If the value is an array, treat it as a primitive-like _value for nested loops
+                        const itemCtx = Array.isArray(val)
+                            ? { _key: key, _value: val, _index: idx }
+                            : (val && typeof val === 'object'
+                                ? { ...val, _key: key, _index: idx }
+                                : { _key: key, _value: val, _index: idx }
+                            );
                         processItem(itemCtx);
                     });
                 } else {
