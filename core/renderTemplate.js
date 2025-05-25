@@ -1,5 +1,5 @@
 /* --------------------------------------------------------------------------------------------------
-Version: 0.13.0
+Version: 0.14.0
 
 Simple Vanilla JS template engine
     - completely valid HTML syntax
@@ -52,6 +52,11 @@ export const renderTemplate = (template, data, domEl) => {
 function walk(node, ctx) {
     // Convert NodeList to static array because we mutate during walk
     [...node.childNodes].forEach(child => {
+        // Drop HTML comments so they don't appear in output
+        if (child.nodeType === Node.COMMENT_NODE) {
+            child.remove();
+            return;
+        }
         // 1. Handle element nodes
         if (child.nodeType === Node.ELEMENT_NODE) {
             const el = /** @type {HTMLElement} */ (child);
