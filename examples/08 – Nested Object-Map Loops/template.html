@@ -1,0 +1,17 @@
+<var data-loop="sections">
+    <section>
+        <!-- Section title from the key -->
+        <h3><var>_key</var></h3>
+
+        <!-- Inner loop: iterate the array in _value -->
+        <ul>
+            <var data-loop="_value">
+                <li>
+                    <strong><var>title</var></strong>
+                    <var data-if="company"> @ <var>company</var></var><br>
+                    <small><var>period</var></small>
+                </li>
+            </var>
+        </ul>
+    </section>
+</var>

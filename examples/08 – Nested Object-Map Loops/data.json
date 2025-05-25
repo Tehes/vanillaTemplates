@@ -1,0 +1,26 @@
+{
+    "sections": {
+        "Work Experience": [
+            {
+                "title": "Senior Software Engineer",
+                "company": "Acme Tech Co.",
+                "period": "Jan 2021 – Present"
+            },
+            {
+                "title": "Full-Stack Developer",
+                "company": "Bright Solutions LLC",
+                "period": "Jun 2018 – Dec 2020"
+            }
+        ],
+        "Education": [
+            {
+                "title": "M.Sc. Computer Science, University of Westshire",
+                "period": "Sep 2016 – May 2018"
+            },
+            {
+                "title": "B.Sc. Information Technology, Eastfield College",
+                "period": "Sep 2012 – May 2016"
+            }
+        ]
+    }
+}
