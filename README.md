@@ -240,9 +240,11 @@ loop as its data context.
 
 ### Empty `<var>` Explained
 
-When you iterate over an array of _primitive_ values, the loop item **is** the
-value, not an object with keys.\
-An empty `<var></var>` therefore means “inject the current item itself”.
+When the current loop item is **a primitive value**—either because you’re
+looping over an array of primitives **or** over the _values_ of an object map—an
+empty `<var></var>` outputs that value directly.
+
+#### Primitive Array
 
 ```html
 <div class="badges">
@@ -252,15 +254,13 @@ An empty `<var></var>` therefore means “inject the current item itself”.
 </div>
 ```
 
-With
-
 ```json
 {
     "badges": ["New", "Sale", "Featured"]
 }
 ```
 
-this renders as:
+renders as:
 
 ```html
 <div class="badges">
@@ -268,6 +268,38 @@ this renders as:
     <span class="badge">Sale</span>
     <span class="badge">Featured</span>
 </div>
+```
+
+#### Object Map
+
+```html
+<dl>
+    <var data-loop="settings">
+        <dt><var>_key</var></dt>
+        <dd><var></var></dd>
+        <!-- empty <var> = current value -->
+    </var>
+</dl>
+```
+
+```json
+{
+    "settings": {
+        "theme": "dark",
+        "itemsPerPage": 20
+    }
+}
+```
+
+renders as:
+
+```html
+<dl>
+    <dt>theme</dt>
+    <dd>dark</dd>
+    <dt>itemsPerPage</dt>
+    <dd>20</dd>
+</dl>
 ```
 
 ## Attribute Binding
