@@ -25,11 +25,13 @@ const chainProps = (obj, props) =>
  * Renders a <template> element into live DOM using declarative directives.
  *
  * Supported directives:
- *   • data-loop="items"   – repeats element for each entry in data.items
- *   • data-attr="src:path"– sets real attribute (here: src) from data.path
- *   • <var>path</var>     – text/HTML placeholders resolved from data
+ *   • data-loop="items"   – repeats element for each entry in data.items or object maps
+ *   • data-if="expr"      – conditionally render elements based on boolean expressions
+ *   • data-attr="src:path"– sets HTML attributes (e.g., src, href, alt) from data.path
+ *   • data-style="prop:path" – sets CSS style properties on elements from data.path
+ *   • <var>path</var>     – text placeholders resolved from data, including within loops
  *
- * Now uses a **single recursive walk**, which
+ * Uses a **single recursive walk**, which
  *   – naturally supports nested loops,
  *   – needs no post-processing “passes”,
  *   – keeps data‑context isolated per recursion level.
