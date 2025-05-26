@@ -39,11 +39,15 @@ const chainProps = (obj, props) =>
  * @param {HTMLTemplateElement} template – the <template> node to instantiate
  * @param {object} data                  – arbitrary JSON‑compatible data object
  * @param {HTMLElement} domEl            – insertion point in the live DOM
+ * @param {object} [options]             – optional parameters
+ * @param {boolean} [options.replace=false] – if true, clears the target container before rendering
  */
-export const renderTemplate = (template, data, domEl) => {
-    const fragment = template.content.cloneNode(true);
-    walk(fragment, data);
-    domEl.append(fragment);
+export const renderTemplate = (template, data, domEl, { replace = false } = {}) => {
+    // Optionally clear existing content
+    if (replace) domEl.textContent = '';
+    const frag = template.content.cloneNode(true);
+    walk(frag, data);
+    domEl.append(frag);
 };
 
 /**

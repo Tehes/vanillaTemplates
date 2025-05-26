@@ -100,6 +100,27 @@ This will produce:
 <p>You got 2 To-do(s).</p>
 ```
 
+## API
+
+```js
+/**
+ * Renders a <template> element into the DOM.
+ *
+ * @param {HTMLTemplateElement} template - the <template> element to render.
+ * @param {object} data - the data object for binding.
+ * @param {HTMLElement} target - the container to append rendered content.
+ * @param {object} [options]
+ * @param {boolean} [options.replace=false] - if true, clears target before rendering.
+ */
+renderTemplate(template, data, target, { replace = false } = {});
+
+// Example usage:
+// Append mode:
+renderTemplate(tpl, data, target);
+// Replace mode:
+renderTemplate(tpl, data, target, { replace: true });
+```
+
 ## Data Binding
 
 The engine uses `<var>` elements to bind data from JavaScript objects to HTML
