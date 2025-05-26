@@ -662,7 +662,7 @@ to generate fully rendered HTML – ideal for static site generation (SSG).
 ### Project Structure
 
 ```
-examples/06-deno-ssg/
+examples/09-deno-ssg/
 ├── build.js         → CLI script to generate output
 ├── data.json        → Data input
 ├── template.html    → Full HTML file with embedded <template>
