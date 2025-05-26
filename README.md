@@ -1,30 +1,49 @@
 # Vanilla JS Template Engine
 
 A lightweight and simple JavaScript template engine that uses valid HTML syntax
-and `<var>` elements for data binding. It provides a minimalistic solution to
-dynamically populate HTML templates with JavaScript data, without needing any
-specialized template language.
+and `<var>` elements for data binding, offering built-in directives for:
+
+- Loops with `data-loop`
+- Conditional rendering with `data-if`
+- Attribute binding with `data-attr`
+- Style binding with `data-style`
+
+It provides a minimalistic solution to dynamically populate HTML templates with
+JavaScript data, without needing any specialized template language.
 
 ## Features
 
 - **Valid HTML Syntax**: The engine uses standard HTML elements and attributes,
   with no need for a custom template language or syntax.
-- **Data Binding with `<var>`**: JavaScript object data can be injected into
-  HTML using the `<var>` element.
-- **Loop Support**: The `data-loop` attribute allows iterating over arrays in
-  your data, creating dynamic lists or repeated elements.
-- **Flexible Attribute Binding**: Using the `data-attr` attribute, you can bind
-  JavaScript data directly to any HTML attribute, such as `src`, `href`, or
-  `alt`.
-- **Zero DOM Footprint**: `<var>` placeholders and loop containers are stripped
-  out during rendering, so the final markup contains only your real HTML.
+- **Data Binding with `<var>`**: Inject JavaScript data into HTML using `<var>`
+  as placeholders.
+- **Loop Support**: Iterate over arrays and object maps with `data-loop`,
+  creating dynamic lists and exposing context helpers.
+- **Conditional Rendering with `data-if`**: Show or hide elements based on
+  boolean expressions, including negation for inverse logic.
+- **Attribute Binding with `data-attr`**: Dynamically set any HTML attribute
+  (e.g., `src`, `href`, `alt`) from data.
+- **Style Binding with `data-style`**: Dynamically set CSS style properties on
+  elements.
+- **Nested Loops & Context Helpers**: Support nested loops with helper variables
+  `_index`, `_first`, `_last`, `_key`, and `_value` for advanced templating
+  scenarios.
+- **Single DOM Walk**: Perform a single recursive traversal for efficient
+  performance.
+- **Zero DOM Footprint**: Strip out all `<var>` placeholders and directive
+  wrappers after rendering, leaving only final HTML.
+- **XSS Safety & Error Handling**: Inject content via `textContent` to prevent
+  XSS and throw descriptive errors for invalid bindings.
 
 ## Why `<var>`?
 
 HTML already defines the
 [`<var>` element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/var)
 for “variables” in a broad sense.\
-Using it as a **placeholder tag** brings three advantages:
+In addition to serving as placeholders, `<var>` elements are also used as
+directive wrappers for grouping and applying loop (`data-loop`) and conditional
+(`data-if`) logic to multiple nodes. Using it as a **placeholder tag** brings
+three advantages:
 
 1. **Valid Mark‑up** – Your template stays 100 % HTML; no proprietary braces
    like `{{name}}`.
