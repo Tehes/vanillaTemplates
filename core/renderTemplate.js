@@ -1,5 +1,5 @@
 /* --------------------------------------------------------------------------------------------------
-Version: 0.15.0
+Version: 0.16.0
 
 Simple Vanilla JS template engine
     - completely valid HTML syntax
@@ -41,12 +41,13 @@ const chainProps = (obj, props) =>
  * @param {HTMLElement} domEl            – insertion point in the live DOM
  * @param {object} [options]             – optional parameters
  * @param {boolean} [options.replace=false] – if true, clears the target container before rendering
+ * @returns {Promise<void>} – resolves when rendering (including includes) is complete
  */
-export const renderTemplate = (template, data, domEl, { replace = false } = {}) => {
+export const renderTemplate = async (template, data, domEl, { replace = false } = {}) => {
     // Optionally clear existing content
     if (replace) domEl.textContent = '';
     const frag = template.content.cloneNode(true);
-    walk(frag, data);
+    await walk(frag, data);
     domEl.append(frag);
 };
 
@@ -55,17 +56,30 @@ export const renderTemplate = (template, data, domEl, { replace = false } = {}) 
  * @param {Node} node
  * @param {object|*} ctx – current data context (may be primitive inside inner loops)
  */
-function walk(node, ctx) {
+async function walk(node, ctx) {
     // Convert NodeList to static array because we mutate during walk
-    [...node.childNodes].forEach(child => {
+    for (const child of [...node.childNodes]) {
         // Drop HTML comments so they don't appear in output
         if (child.nodeType === Node.COMMENT_NODE) {
             child.remove();
-            return;
+            continue;
         }
         // 1. Handle element nodes
         if (child.nodeType === Node.ELEMENT_NODE) {
             const el = /** @type {HTMLElement} */ (child);
+
+            /* --- data-include -------------------------------------------------- */
+            if (el.dataset.include) {
+                const src = el.dataset.include;
+                const response = await fetch(src);
+                const html = await response.text();
+                const tmp = document.createElement('template');
+                tmp.innerHTML = html;
+                const partialFrag = tmp.content.cloneNode(true);
+                await walk(partialFrag, ctx);
+                el.replaceWith(...partialFrag.childNodes);
+                continue;
+            }
 
             /* --- data-if -------------------------------------------------- */
             if (el.dataset.if) {
@@ -81,15 +95,17 @@ function walk(node, ctx) {
                 el.removeAttribute('data-if');
                 if (!cond) {
                     el.remove();
-                    return; // remove falsy block
+                    continue; // remove falsy block
                 }
                 // For <var> wrappers, unwrap children and continue processing them
                 if (el.tagName === 'VAR') {
                     const children = [...el.childNodes];
                     el.before(...children);
                     el.remove();
-                    children.forEach(child => walk(child, ctx));
-                    return;
+                    for (const child of children) {
+                        await walk(child, ctx);
+                    }
+                    continue;
                 }
             }
             /* --- data-loop -------------------------------------------------- */
@@ -97,16 +113,17 @@ function walk(node, ctx) {
                 const src = chainProps(ctx, el.dataset.loop);
 
                 // Helper: clone element, recurse with new ctx, unwrap children
-                const processItem = (itemCtx) => {
+                const processItem = async (itemCtx) => {
                     const clone = el.cloneNode(true);
                     clone.removeAttribute('data-loop');
-                    walk(clone, itemCtx);
+                    await walk(clone, itemCtx);
                     el.before(...clone.childNodes);
                 };
 
                 if (Array.isArray(src)) {
                     const len = src.length;
-                    src.forEach((item, idx) => {
+                    for (let idx = 0; idx < len; idx++) {
+                        const item = src[idx];
                         const baseCtx = (item && typeof item === 'object')
                             ? { ...item }
                             : { _value: item };
@@ -116,10 +133,12 @@ function walk(node, ctx) {
                             _first: idx === 0,
                             _last: idx === len - 1
                         };
-                        processItem(itemCtx);
-                    });
+                        await processItem(itemCtx);
+                    }
                 } else if (src && typeof src === 'object') {
-                    Object.entries(src).forEach(([key, val], idx) => {
+                    const entries = Object.entries(src);
+                    for (let idx = 0; idx < entries.length; idx++) {
+                        const [key, val] = entries[idx];
                         // If the value is an array, treat it as a primitive-like _value for nested loops
                         const itemCtx = Array.isArray(val)
                             ? { _key: key, _value: val, _index: idx }
@@ -127,8 +146,8 @@ function walk(node, ctx) {
                                 ? { ...val, _key: key, _index: idx }
                                 : { _key: key, _value: val, _index: idx }
                             );
-                        processItem(itemCtx);
-                    });
+                        await processItem(itemCtx);
+                    }
                 } else {
                     throw new TypeError(
                         `data for "${el.dataset.loop}" must be array or object`
@@ -136,7 +155,7 @@ function walk(node, ctx) {
                 }
 
                 el.remove(); // drop original loop container
-                return;      // loop handled – skip further processing
+                continue;      // loop handled – skip further processing
             }
 
             /* --- data-style -------------------------------------------------- */
@@ -174,14 +193,14 @@ function walk(node, ctx) {
                             : ctx)
                         : chainProps(ctx, path);
                 el.replaceWith(document.createTextNode(value ?? ''));
-                return; // placeholder resolved – do not walk children
+                continue; // placeholder resolved – do not walk children
             }
 
             // Normal element → recurse into its children
-            walk(el, ctx);
+            await walk(el, ctx);
 
         } else if (child.nodeType === Node.TEXT_NODE) {
             // text node – nothing to do
         }
-    });
+    }
 }

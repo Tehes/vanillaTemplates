@@ -1,0 +1,23 @@
+<!-- 1) Include profile card -->
+<var data-include="profile.html"></var>
+
+<section>
+    <h3>Your Articles</h3>
+    <!-- 2) If articles exist, display as a list -->
+    <var data-if="articles.length">
+        <ul>
+            <var data-loop="articles">
+                <li>
+                    <a data-attr="href:url"><var>title</var></a>
+                    <span data-if="published">(Published)</span>
+                    <span data-if="!published">(Draft)</span>
+                </li>
+            </var>
+        </ul>
+    </var>
+
+    <!-- 3) If no articles, display a friendly message -->
+    <var data-if="!articles.length">
+        <p>No articles available.</p>
+    </var>
+</section>

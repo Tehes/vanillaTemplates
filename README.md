@@ -7,6 +7,7 @@ and `<var>` elements for data binding, offering built-in directives for:
 - Conditional rendering with `data-if`
 - Attribute binding with `data-attr`
 - Style binding with `data-style`
+- Includes via `data-include`
 
 It provides a minimalistic solution to dynamically populate HTML templates with
 JavaScript data, without needing any specialized template language.
@@ -25,6 +26,8 @@ JavaScript data, without needing any specialized template language.
   (e.g., `src`, `href`, `alt`) from data.
 - **Style Binding with `data-style`**: Dynamically set CSS style properties on
   elements.
+- **Includes with `data-include`**: Load and render external HTML partials via
+  `<var data-include>`.
 - **Nested Loops & Context Helpers**: Support nested loops with helper variables
   `_index`, `_first`, `_last`, `_key`, and `_value` for advanced templating
   scenarios.
@@ -41,9 +44,9 @@ HTML already defines the
 [`<var>` element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/var)
 for “variables” in a broad sense.\
 In addition to serving as placeholders, `<var>` elements are also used as
-directive wrappers for grouping and applying loop (`data-loop`) and conditional
-(`data-if`) logic to multiple nodes. Using it as a **placeholder tag** brings
-three advantages:
+directive wrappers for grouping and applying loop (`data-loop`), conditional
+(`data-if`), and include (`data-include`) logic to multiple nodes. Using it as a
+**placeholder tag** brings three advantages:
 
 1. **Valid Mark‑up** – Your template stays 100 % HTML; no proprietary braces
    like `{{name}}`.
@@ -98,6 +101,20 @@ This will produce:
 ```html
 <h2>Hello John Doe!</h2>
 <p>You got 2 To-do(s).</p>
+```
+
+## Includes
+
+```html
+<!-- Include a user profile partial -->
+<var data-include="profile.html"></var>
+
+<!-- Loop over a list of items -->
+<ul>
+    <var data-loop="items">
+        <li><var></var></li>
+    </var>
+</ul>
 ```
 
 ## API
@@ -702,6 +719,7 @@ no JavaScript required on the client.
 | 07  | Nested Loops            | `examples/07-nested-loops/`          |
 | 08  | Nested Object-Map Loops | `examples/08-nested-object-map/`     |
 | 09  | Server-side Rendering   | `examples/09-deno-ssg/dist/`         |
+| 10  | Includes                | `examples/10-includes/`              |
 
 _(Launch a dev server such as `npx serve .` and open the links.)_
 

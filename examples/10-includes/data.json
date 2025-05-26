@@ -1,0 +1,19 @@
+{
+    "user": {
+        "name": "Jane Smith",
+        "avatarUrl": "https://example.com/avatars/jane.png",
+        "role": "Editor"
+    },
+    "articles": [
+        {
+            "title": "Understanding Vanilla Template Engine",
+            "url": "/articles/1",
+            "published": true
+        },
+        {
+            "title": "Upcoming Features in v0.16",
+            "url": "/articles/2",
+            "published": false
+        }
+    ]
+}
