@@ -41,7 +41,7 @@ const chainProps = (obj, props) =>
  * @param {HTMLElement} domEl            – insertion point in the live DOM
  * @param {object} [options]             – optional parameters
  * @param {boolean} [options.replace=false] – if true, clears the target container before rendering
- * @returns {Promise<void>} – resolves when rendering (including includes) is complete
+ * @returns {Promise<DocumentFragment>} – resolves when rendering (including includes) is complete
  */
 export const renderTemplate = async (template, data, domEl, { replace = false } = {}) => {
     // Optionally clear existing content
@@ -49,6 +49,7 @@ export const renderTemplate = async (template, data, domEl, { replace = false } 
     const frag = template.content.cloneNode(true);
     await walk(frag, data);
     domEl.append(frag);
+    return frag;
 };
 
 /**
