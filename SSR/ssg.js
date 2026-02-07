@@ -30,7 +30,7 @@ export async function renderTemplateFile(templatePath, dataPath) {
   // 3) Render each <template> tag in place and remove it
   const templates = Array.from(doc.querySelectorAll("template"));
   for (const tpl of templates) {
-    renderTemplate(tpl, data, tpl.parentNode);
+    await renderTemplate(tpl, data, tpl.parentNode);
     tpl.remove();
   }
 
