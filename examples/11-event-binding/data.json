@@ -1,0 +1,13 @@
+{
+    "title": "Declarative Event Binding",
+    "description": "This template uses data-event as a shortcut for addEventListener.",
+    "saveLabel": "Save",
+    "hoverHint": "Hover over this box",
+    "status": "Idle",
+    "bgColor": "#f9f9f9",
+    "cardBorder": "1px solid #ccc",
+    "padding": "1em",
+    "hoverMarginTop": "1em",
+    "hoverPadding": "0.75em",
+    "hoverBorder": "1px dashed #999"
+}

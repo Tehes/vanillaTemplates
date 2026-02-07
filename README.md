@@ -7,6 +7,7 @@ and `<var>` elements for data binding, offering built-in directives for:
 - Conditional rendering with `data-if`
 - Attribute binding with `data-attr`
 - Style binding with `data-style`
+- Event binding with `data-event`
 - Includes via `data-include`
 
 It provides a minimalistic solution to dynamically populate HTML templates with
@@ -26,6 +27,8 @@ JavaScript data, without needing any specialized template language.
   (e.g., `src`, `href`, `alt`) from data.
 - **Style Binding with `data-style`**: Dynamically set CSS style properties on
   elements.
+- **Event Binding with `data-event`**: Declaratively bind DOM event listeners
+  via an explicit `events` map.
 - **Includes with `data-include`**: Load and render external HTML partials via
   `<var data-include>`.
 - **Nested Loops & Context Helpers**: Support nested loops with helper variables
@@ -128,14 +131,17 @@ This will produce:
  * @param {HTMLElement} target - the container to append rendered content.
  * @param {object} [options]
  * @param {boolean} [options.replace=false] - if true, clears target before rendering.
+ * @param {Record<string, Function>} [options.events] - explicit event handlers for data-event.
  */
-renderTemplate(template, data, target, { replace = false } = {});
+renderTemplate(template, data, target, { replace = false, events } = {});
 
 // Example usage:
 // Append mode:
 renderTemplate(tpl, data, target);
 // Replace mode:
 renderTemplate(tpl, data, target, { replace: true });
+// Declarative event binding:
+renderTemplate(tpl, data, target, { events: { onSave, onHover, onLeave } });
 ```
 
 ## Data Binding
@@ -546,6 +552,51 @@ Using the pipe (`|`) you can set several attributes at once:
 <img src="https://example.com/avatar.jpg" alt="Jane Doe">
 ```
 
+## Event Binding
+
+Use `data-event` for a minimal declarative shortcut to `addEventListener`.
+The value format is:
+
+`eventName:handlerName|eventName:handlerName`
+
+### Single Event Example
+
+```html
+<button data-event="click:onSave">Save</button>
+```
+
+### Multiple Events Example
+
+```html
+<div data-event="mouseenter:onHover|mouseleave:onLeave"></div>
+```
+
+```js
+renderTemplate(template, data, target, {
+    events: {
+        onSave(event) {
+            console.log("saved", event.currentTarget);
+        },
+        onHover() {
+            console.log("hover in");
+        },
+        onLeave() {
+            console.log("hover out");
+        }
+    }
+});
+```
+
+Rules:
+
+- `data-event` is only processed when `events` is passed to `renderTemplate`.
+- Handler names are resolved only from `options.events` (no global lookup).
+- In SSR/static rendering workflows, `events` is ignored (no runtime event listeners are attached).
+- Missing handlers throw:
+  `TypeError("Missing event handler: ...")`.
+- No modifiers (`.prevent`, `.once`, `.stop`), no arguments, no delegation,
+  and no expression/eval support.
+
 ## Conditional Rendering
 
 With `data-if`, you can conditionally render elements based on boolean values.
@@ -589,13 +640,13 @@ This will produce:
 ## Wrapper vs Direct Directives
 
 Your template engine supports applying directives either directly to real DOM
-elements or using `<var>` wrappers when grouping is needed. This applies to both
-loops and conditionals.
+elements or using `<var>` wrappers when grouping is needed. This applies to
+loops, conditionals, and other bindings.
 
 - **Direct Directive on Element**\
-  Attach directives like `data-loop`, `data-if`, `data-attr`, or `data-style`
+  Attach directives like `data-loop`, `data-if`, `data-attr`, `data-style`, or `data-event`
   directly to the element you wish to repeat, show/hide, or bind
-  attributes/styles to:
+  attributes/styles/events to:
 
   ```html
   <!-- Loop: single <li> per item -->
@@ -640,12 +691,17 @@ loadDataAndTemplate(
 );
 ```
 
+You can also pass an optional fourth argument to forward `renderTemplate`
+options such as `replace` and `events`.
+
 ## Robustness
 
 - **XSS‑safe:** placeholder values are injected via `textContent`, so HTML
   inside your data is not executed.
 - **Error handling:** if the path given to `data-loop` is not an array, the
   engine throws a descriptive `TypeError`.
+- **Event safety:** missing or malformed `data-event` handlers throw clear
+  `TypeError`s instead of evaluating arbitrary code.
 
 ## Server-Side Rendering (Static Site Generation)
 
@@ -720,6 +776,7 @@ no JavaScript required on the client.
 | 08  | Nested Object-Map Loops | `examples/08-nested-object-map/`     |
 | 09  | Server-side Rendering   | `examples/09-deno-ssg/dist/`         |
 | 10  | Includes                | `examples/10-includes/`              |
+| 11  | Event Binding           | `examples/11-event-binding/`         |
 
 _(Launch a dev server such as `npx serve .` and open the links.)_
 

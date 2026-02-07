@@ -5,8 +5,9 @@ import { renderTemplate } from '../core/renderTemplate.js'; // adjust path if ne
  * @param {string}  dataPath     – URL of the JSON file
  * @param {string}  templatePath – URL of the raw HTML template
  * @param {Element} mountEl      – DOM element where the result will be inserted
+ * @param {object} [options]     – optional renderTemplate options (e.g. replace/events)
  */
-export async function loadDataAndTemplate(dataPath, templatePath, mountEl) {
+export async function loadDataAndTemplate(dataPath, templatePath, mountEl, options = {}) {
     try {
         // load data
         const dataResp = await fetch(dataPath);
@@ -22,7 +23,7 @@ export async function loadDataAndTemplate(dataPath, templatePath, mountEl) {
         const templateEl = document.createElement('template');
         templateEl.innerHTML = tplHtml;
 
-        renderTemplate(templateEl, data, mountEl);
+        await renderTemplate(templateEl, data, mountEl, options);
     } catch (err) {
         console.error('Ladevorgang fehlgeschlagen:', err);
     }

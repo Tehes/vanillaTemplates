@@ -1,5 +1,5 @@
 /* --------------------------------------------------------------------------------------------------
-Version: 0.16.0
+Version: 0.17.0
 
 Simple Vanilla JS template engine
     - completely valid HTML syntax
@@ -19,7 +19,77 @@ github repo @https://github.com/Tehes/vanillaTemplates
  * Uses optional chaining so intermediate `undefined` values do not throw.
  */
 const chainProps = (obj, props) =>
-    !props ? obj : props.split('.').reduce((o, k) => o?.[k], obj);
+    !props ? obj : props.split(".").reduce((o, k) => o?.[k], obj);
+
+const EVENT_NAME_RE = /^[A-Za-z][A-Za-z0-9_-]*$/;
+const HANDLER_NAME_RE = /^[A-Za-z_$][A-Za-z0-9_$]*$/;
+
+/**
+ * @typedef {Object} EventBinding
+ * @property {HTMLElement} el
+ * @property {string} eventName
+ * @property {string} handlerName
+ */
+
+/**
+ * Parses data-event declarations like "click:onSave|mouseenter:onEnter".
+ * Enforces a strict "event:handler" format without modifiers/args/expressions.
+ *
+ * @param {string} declaration
+ * @returns {Array<{ eventName: string, handlerName: string }>}
+ */
+function parseDataEventDeclaration(declaration) {
+    const source = declaration.trim();
+    if (!source) {
+        throw new TypeError("Invalid data-event declaration: empty value");
+    }
+
+    return source.split("|").map((rawBinding) => {
+        const binding = rawBinding.trim();
+        const parts = binding.split(":").map((part) => part.trim());
+        const [eventName, handlerName] = parts;
+
+        if (
+            parts.length !== 2 ||
+            !EVENT_NAME_RE.test(eventName) ||
+            !HANDLER_NAME_RE.test(handlerName)
+        ) {
+            throw new TypeError(`Invalid data-event declaration: "${binding}"`);
+        }
+
+        return { eventName, handlerName };
+    });
+}
+
+/**
+ * Registers event listeners collected during rendering.
+ *
+ * @param {EventBinding[]} bindings
+ * @param {Record<string, Function>} events
+ */
+function bindCollectedEvents(bindings, events) {
+    if (!events || typeof events !== "object") {
+        throw new TypeError("options.events must be an object");
+    }
+
+    // Validate all handlers before mutating the rendered tree.
+    for (const { handlerName } of bindings) {
+        if (typeof events[handlerName] !== "function") {
+            throw new TypeError(`Missing event handler: ${handlerName}`);
+        }
+    }
+
+    const processedElements = new Set();
+    for (const { el, eventName, handlerName } of bindings) {
+        el.addEventListener(eventName, events[handlerName]);
+        processedElements.add(el);
+    }
+
+    // Remove data-event only after successful listener registration.
+    for (const el of processedElements) {
+        el.removeAttribute("data-event");
+    }
+}
 
 /**
  * Renders a <template> element into live DOM using declarative directives.
@@ -29,6 +99,7 @@ const chainProps = (obj, props) =>
  *   • data-if="expr"      – conditionally render elements based on boolean expressions
  *   • data-attr="src:path"– sets HTML attributes (e.g., src, href, alt) from data.path
  *   • data-style="prop:path" – sets CSS style properties on elements from data.path
+ *   • data-event="event:handler|..." – binds events from an explicit events map
  *   • <var>path</var>     – text placeholders resolved from data, including within loops
  *
  * Uses a **single recursive walk**, which
@@ -41,13 +112,23 @@ const chainProps = (obj, props) =>
  * @param {HTMLElement} domEl            – insertion point in the live DOM
  * @param {object} [options]             – optional parameters
  * @param {boolean} [options.replace=false] – if true, clears the target container before rendering
+ * @param {Record<string, Function>} [options.events] – explicit event handler map for data-event
  * @returns {Promise<void>} – resolves when rendering (including includes) is complete
  */
-export const renderTemplate = async (template, data, domEl, { replace = false } = {}) => {
+export const renderTemplate = async (
+    template,
+    data,
+    domEl,
+    { replace = false, events } = {},
+) => {
     // Optionally clear existing content
-    if (replace) domEl.textContent = '';
+    if (replace) domEl.textContent = "";
     const frag = template.content.cloneNode(true);
-    await walk(frag, data);
+    const eventBindings = events == null ? null : [];
+    await walk(frag, data, eventBindings);
+    if (eventBindings && eventBindings.length > 0) {
+        bindCollectedEvents(eventBindings, events);
+    }
     domEl.append(frag);
 };
 
@@ -55,8 +136,9 @@ export const renderTemplate = async (template, data, domEl, { replace = false } 
  * Recursively processes a node and its children in place.
  * @param {Node} node
  * @param {object|*} ctx – current data context (may be primitive inside inner loops)
+ * @param {EventBinding[]|null} [eventBindings]
  */
-async function walk(node, ctx) {
+async function walk(node, ctx, eventBindings = null) {
     // Convert NodeList to static array because we mutate during walk
     for (const child of [...node.childNodes]) {
         // Drop HTML comments so they don't appear in output
@@ -73,10 +155,10 @@ async function walk(node, ctx) {
                 const src = el.dataset.include;
                 const response = await fetch(src);
                 const html = await response.text();
-                const tmp = document.createElement('template');
+                const tmp = document.createElement("template");
                 tmp.innerHTML = html;
                 const partialFrag = tmp.content.cloneNode(true);
-                await walk(partialFrag, ctx);
+                await walk(partialFrag, ctx, eventBindings);
                 el.replaceWith(...partialFrag.childNodes);
                 continue;
             }
@@ -85,25 +167,25 @@ async function walk(node, ctx) {
             if (el.dataset.if) {
                 let expr = el.dataset.if.trim();
                 let invert = false;
-                if (expr.startsWith('!')) {
+                if (expr.startsWith("!")) {
                     invert = true;
                     expr = expr.slice(1).trim();
                 }
                 const raw = chainProps(ctx, expr);
                 let cond = Boolean(raw);
                 if (invert) cond = !cond;
-                el.removeAttribute('data-if');
+                el.removeAttribute("data-if");
                 if (!cond) {
                     el.remove();
                     continue; // remove falsy block
                 }
                 // For <var> wrappers, unwrap children and continue processing them
-                if (el.tagName === 'VAR') {
+                if (el.tagName === "VAR") {
                     const children = [...el.childNodes];
                     el.before(...children);
                     el.remove();
                     for (const child of children) {
-                        await walk(child, ctx);
+                        await walk(child, ctx, eventBindings);
                     }
                     continue;
                 }
@@ -115,8 +197,8 @@ async function walk(node, ctx) {
                 // Helper: clone element, recurse with new ctx, unwrap children
                 const processItem = async (itemCtx) => {
                     const clone = el.cloneNode(true);
-                    clone.removeAttribute('data-loop');
-                    await walk(clone, itemCtx);
+                    clone.removeAttribute("data-loop");
+                    await walk(clone, itemCtx, eventBindings);
                     el.before(...clone.childNodes);
                 };
 
@@ -124,81 +206,86 @@ async function walk(node, ctx) {
                     const len = src.length;
                     for (let idx = 0; idx < len; idx++) {
                         const item = src[idx];
-                        const baseCtx = (item && typeof item === 'object')
+                        const baseCtx = (item && typeof item === "object")
                             ? { ...item }
                             : { _value: item };
                         const itemCtx = {
                             ...baseCtx,
                             _index: idx,
                             _first: idx === 0,
-                            _last: idx === len - 1
+                            _last: idx === len - 1,
                         };
                         await processItem(itemCtx);
                     }
-                } else if (src && typeof src === 'object') {
+                } else if (src && typeof src === "object") {
                     const entries = Object.entries(src);
                     for (let idx = 0; idx < entries.length; idx++) {
                         const [key, val] = entries[idx];
                         // If the value is an array, treat it as a primitive-like _value for nested loops
                         const itemCtx = Array.isArray(val)
                             ? { _key: key, _value: val, _index: idx }
-                            : (val && typeof val === 'object'
+                            : (val && typeof val === "object"
                                 ? { ...val, _key: key, _index: idx }
-                                : { _key: key, _value: val, _index: idx }
-                            );
+                                : { _key: key, _value: val, _index: idx });
                         await processItem(itemCtx);
                     }
                 } else {
                     throw new TypeError(
-                        `data for "${el.dataset.loop}" must be array or object`
+                        `data for "${el.dataset.loop}" must be array or object`,
                     );
                 }
 
                 el.remove(); // drop original loop container
-                continue;      // loop handled – skip further processing
+                continue; // loop handled – skip further processing
             }
 
             /* --- data-style -------------------------------------------------- */
             if (el.dataset.style) {
                 el.dataset.style
-                    .split('|')
-                    .forEach(pair => {
-                        const [prop, path] = pair.split(':');
+                    .split("|")
+                    .forEach((pair) => {
+                        const [prop, path] = pair.split(":");
                         const value = chainProps(ctx, path);
                         if (value != null) {
                             el.style.setProperty(prop, value);
                         }
                     });
-                el.removeAttribute('data-style');
+                el.removeAttribute("data-style");
             }
 
             /* --- data-attr -------------------------------------------------- */
             if (el.dataset.attr) {
-                el.dataset.attr                       // e.g. "src:avatar|alt:name"
-                    .split('|')                       // => ["src:avatar", "alt:name"]
-                    .forEach(binding => {
-                        const [key, path] = binding.split(':');
+                el.dataset.attr // e.g. "src:avatar|alt:name"
+                    .split("|") // => ["src:avatar", "alt:name"]
+                    .forEach((binding) => {
+                        const [key, path] = binding.split(":");
                         el.setAttribute(key, chainProps(ctx, path));
                     });
-                el.removeAttribute('data-attr');      // keep final DOM clean
+                el.removeAttribute("data-attr"); // keep final DOM clean
             }
 
             /* --- <var> placeholders (element version) ---------------------- */
-            if (el.tagName === 'VAR') {
+            if (el.tagName === "VAR") {
                 const path = el.textContent.trim();
-                const value =
-                    path === ''
-                        ? (ctx && typeof ctx === 'object' && '_value' in ctx
-                            ? ctx._value
-                            : ctx)
-                        : chainProps(ctx, path);
-                el.replaceWith(document.createTextNode(value ?? ''));
+                const value = path === ""
+                    ? (ctx && typeof ctx === "object" && "_value" in ctx
+                        ? ctx._value
+                        : ctx)
+                    : chainProps(ctx, path);
+                el.replaceWith(document.createTextNode(value ?? ""));
                 continue; // placeholder resolved – do not walk children
             }
 
-            // Normal element → recurse into its children
-            await walk(el, ctx);
+            /* --- data-event ------------------------------------------------- */
+            if (eventBindings && el.dataset.event) {
+                const parsed = parseDataEventDeclaration(el.dataset.event);
+                for (const { eventName, handlerName } of parsed) {
+                    eventBindings.push({ el, eventName, handlerName });
+                }
+            }
 
+            // Normal element → recurse into its children
+            await walk(el, ctx, eventBindings);
         } else if (child.nodeType === Node.TEXT_NODE) {
             // text node – nothing to do
         }
