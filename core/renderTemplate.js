@@ -1,5 +1,5 @@
 /* --------------------------------------------------------------------------------------------------
-Version: 0.17.0
+Version: 0.18.0
 
 Simple Vanilla JS template engine
     - completely valid HTML syntax
@@ -125,7 +125,8 @@ export const renderTemplate = async (
     if (replace) domEl.textContent = "";
     const frag = template.content.cloneNode(true);
     const eventBindings = events == null ? null : [];
-    await walk(frag, data, eventBindings);
+    const includeCache = new Map();
+    await walk(frag, data, eventBindings, includeCache);
     if (eventBindings && eventBindings.length > 0) {
         bindCollectedEvents(eventBindings, events);
     }
@@ -137,8 +138,9 @@ export const renderTemplate = async (
  * @param {Node} node
  * @param {object|*} ctx – current data context (may be primitive inside inner loops)
  * @param {EventBinding[]|null} [eventBindings]
+ * @param {Map<string, Promise<string>>} includeCache
  */
-async function walk(node, ctx, eventBindings = null) {
+async function walk(node, ctx, eventBindings = null, includeCache) {
     // Convert NodeList to static array because we mutate during walk
     for (const child of [...node.childNodes]) {
         // Drop HTML comments so they don't appear in output
@@ -153,12 +155,18 @@ async function walk(node, ctx, eventBindings = null) {
             /* --- data-include -------------------------------------------------- */
             if (el.dataset.include) {
                 const src = el.dataset.include;
-                const response = await fetch(src);
-                const html = await response.text();
+                let includePromise = includeCache.get(src);
+                if (!includePromise) {
+                    includePromise = fetch(src).then((response) =>
+                        response.text()
+                    );
+                    includeCache.set(src, includePromise);
+                }
+                const html = await includePromise;
                 const tmp = document.createElement("template");
                 tmp.innerHTML = html;
                 const partialFrag = tmp.content.cloneNode(true);
-                await walk(partialFrag, ctx, eventBindings);
+                await walk(partialFrag, ctx, eventBindings, includeCache);
                 el.replaceWith(...partialFrag.childNodes);
                 continue;
             }
@@ -185,7 +193,7 @@ async function walk(node, ctx, eventBindings = null) {
                     el.before(...children);
                     el.remove();
                     for (const child of children) {
-                        await walk(child, ctx, eventBindings);
+                        await walk(child, ctx, eventBindings, includeCache);
                     }
                     continue;
                 }
@@ -198,7 +206,7 @@ async function walk(node, ctx, eventBindings = null) {
                 const processItem = async (itemCtx) => {
                     const clone = el.cloneNode(true);
                     clone.removeAttribute("data-loop");
-                    await walk(clone, itemCtx, eventBindings);
+                    await walk(clone, itemCtx, eventBindings, includeCache);
                     el.before(...clone.childNodes);
                 };
 
@@ -285,7 +293,7 @@ async function walk(node, ctx, eventBindings = null) {
             }
 
             // Normal element → recurse into its children
-            await walk(el, ctx, eventBindings);
+            await walk(el, ctx, eventBindings, includeCache);
         } else if (child.nodeType === Node.TEXT_NODE) {
             // text node – nothing to do
         }

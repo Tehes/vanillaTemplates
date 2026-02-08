@@ -31,6 +31,8 @@ JavaScript data, without needing any specialized template language.
   via an explicit `events` map.
 - **Includes with `data-include`**: Load and render external HTML partials via
   `<var data-include>`.
+- **Per-Render Include De-Duplication**: Within one `renderTemplate(...)` call,
+  repeated includes with the same `src` are fetched only once.
 - **Nested Loops & Context Helpers**: Support nested loops with helper variables
   `_index`, `_first`, `_last`, `_key`, and `_value` for advanced templating
   scenarios.
@@ -281,8 +283,6 @@ renders as:
 </dl>
 ```
 
-`````markdown
-````markdown
 ### Advanced Example
 
 This example focuses on how the object-map loop exposes `_key` and `_value` (an
@@ -316,8 +316,6 @@ array) so you can nest a second loop over each section’s items.
     }
 }
 ```
-````
-`````
 
 ```html
 <!-- Outer loop: iterate object map of sections -->
