@@ -43,6 +43,50 @@ JavaScript data, without needing any specialized template language.
 - **XSS Safety & Error Handling**: Inject content via `textContent` to prevent
   XSS and throw descriptive errors for invalid bindings.
 
+## Installation
+
+This project does not require npm, a bundler, or a build step. Use the entry
+point that matches your setup:
+
+- **Direct rendering:** import `renderTemplate` from `core/renderTemplate.js`.
+- **External JSON and HTML templates:** use `browser/loader.js` together with
+  `core/renderTemplate.js`.
+- **Static site generation:** import `renderTemplateFile` from `SSR/ssg.js` in
+  a Deno build script, as shown in `examples/09-deno-ssg/build.js`.
+
+### Import from jsDelivr
+
+You can import the released module directly from jsDelivr without copying the file into your project:
+
+```js
+import { renderTemplate } from "https://cdn.jsdelivr.net/gh/Tehes/vanillaTemplates@v0.18.1/core/renderTemplate.js";
+```
+
+Use a fixed release tag such as `@v0.18.1` for stable pages. Avoid moving
+targets such as `@main` or `@latest` unless you explicitly want your project to
+follow future changes automatically.
+
+### Import from a local copy
+
+If the files are part of your project, import the module with a relative path:
+
+```js
+import { renderTemplate } from "./core/renderTemplate.js";
+```
+
+For external data and template files, import the browser helper instead:
+
+```js
+import { loadDataAndTemplate } from "./browser/loader.js";
+```
+
+`browser/loader.js` imports `../core/renderTemplate.js` internally, so keep the
+`browser/` and `core/` folders in the same relative structure or adjust that
+import path in your local copy.
+
+Because the helper, includes, and JSON examples use `fetch()`, run them through
+a local server instead of opening the files via `file://`.
+
 ## Why `<var>`?
 
 HTML already defines the
@@ -82,20 +126,6 @@ directive wrappers for grouping and applying loop (`data-loop`), conditional
 
 ## Basic Usage
 
-### Import from jsDelivr
-
-For demos, GitHub Pages projects, or other browser-only setups, you can import
-the released module directly from jsDelivr without npm, bundlers, or copying the
-file into your project:
-
-```js
-import { renderTemplate } from "https://cdn.jsdelivr.net/gh/Tehes/vanillaTemplates@v0.18.1/core/renderTemplate.js";
-```
-
-Use a fixed release tag such as `@v0.18.1` for stable pages. Avoid moving targets
-such as @master or @latest unless you explicitly want your project to follow
-future changes automatically.
-
 ### HTML Template Example
 
 ```html
@@ -103,7 +133,7 @@ future changes automatically.
 <p>You got <var>todos.length</var> To-do(s).</p>
 ```
 
-### JSON Example
+### Basic Data Example
 
 ```json
 {
@@ -120,20 +150,6 @@ This will produce:
 ```html
 <h2>Hello John Doe!</h2>
 <p>You got 2 To-do(s).</p>
-```
-
-## Includes
-
-```html
-<!-- Include a user profile partial -->
-<var data-include="profile.html"></var>
-
-<!-- Loop over a list of items -->
-<ul>
-    <var data-loop="items">
-        <li><var></var></li>
-    </var>
-</ul>
 ```
 
 ## API
@@ -153,11 +169,11 @@ renderTemplate(template, data, target, { replace = false, events } = {});
 
 // Example usage:
 // Append mode:
-renderTemplate(tpl, data, target);
+await renderTemplate(tpl, data, target);
 // Replace mode:
-renderTemplate(tpl, data, target, { replace: true });
+await renderTemplate(tpl, data, target, { replace: true });
 // Declarative event binding:
-renderTemplate(tpl, data, target, { events: { onSave, onHover, onLeave } });
+await renderTemplate(tpl, data, target, { events: { onSave, onHover, onLeave } });
 ```
 
 ## Data Binding
@@ -189,9 +205,7 @@ duplicate the element for each item.
 </ul>
 ```
 
-<!-- Repeats for each hobby in the user.hobbies array -->
-
-### JSON Example
+### Loop Data Example
 
 ```json
 {
@@ -486,7 +500,7 @@ You can bind **multiple attributes at once** by separating each
 <!-- The image source will be set dynamically -->
 ```
 
-**Data**
+Data:
 
 ```json
 {
@@ -496,7 +510,7 @@ You can bind **multiple attributes at once** by separating each
 }
 ```
 
-**Result**
+Result:
 
 ```html
 <img src="https://example.com/avatar.jpg">
@@ -507,7 +521,7 @@ You can bind **multiple attributes at once** by separating each
 The `data-style` attribute allows you to dynamically set CSS style properties.
 Separate multiple declarations with `|` using the format `property:dataPath`.
 
-### Example
+### Style Binding Example
 
 ```html
 <a
@@ -547,7 +561,7 @@ Using the pipe (`|`) you can set several attributes at once:
 <img data-attr="src:user.avatar|alt:user.name">
 ```
 
-**Data**
+Data:
 
 ```json
 {
@@ -558,7 +572,7 @@ Using the pipe (`|`) you can set several attributes at once:
 }
 ```
 
-**Result**
+Result:
 
 ```html
 <img src="https://example.com/avatar.jpg" alt="Jane Doe">
@@ -614,7 +628,7 @@ Rules:
 With `data-if`, you can conditionally render elements based on boolean values.
 If the condition is falsy, the element will be removed entirely.
 
-### Example
+### Conditional Rendering Example
 
 ```html
 <ul>
@@ -646,6 +660,20 @@ This will produce:
     <li>✔ Write docs</li>
     <li>✖ Publish release</li>
     <li>✖ Clean up code</li>
+</ul>
+```
+
+## Includes
+
+```html
+<!-- Include a user profile partial -->
+<var data-include="profile.html"></var>
+
+<!-- Loop over a list of items -->
+<ul>
+    <var data-loop="items">
+        <li><var></var></li>
+    </var>
 </ul>
 ```
 
@@ -690,11 +718,13 @@ The wrapper is removed after rendering, leaving only its children in the DOM.
 
 ## Loading external templates & data
 
-Use the helper `loadDataAndTemplate()` found in `js/loader.js` to fetch a JSON
-file and a raw HTML template:
+Use the helper `loadDataAndTemplate()` found in `browser/loader.js` to fetch a
+JSON file and a raw HTML template. The helper imports `renderTemplate` from
+`../core/renderTemplate.js`, so keep both files in the expected relative
+structure or adjust the import path:
 
 ```js
-import { loadDataAndTemplate } from "./js/loader.js";
+import { loadDataAndTemplate } from "./browser/loader.js";
 
 loadDataAndTemplate(
     "./data.json", // JSON file
@@ -720,6 +750,13 @@ options such as `replace` and `events`.
 In addition to client-side rendering, you can use the engine at **build time**
 to generate fully rendered HTML – ideal for static site generation (SSG).
 
+The SSG entry point is `SSR/ssg.js`. It exports `renderTemplateFile()`, which
+loads a full HTML template file and a JSON data file, renders all `<template>`
+elements in place, and returns the complete HTML document as a string.
+
+`SSR/ssg.js` is Deno-specific: it uses `Deno.readTextFile(...)`, imports
+`deno_dom`, and reuses the browser rendering logic from `core/renderTemplate.js`.
+
 ### Key Differences from Client-Side Use
 
 1. **Entire HTML document as template**: The full HTML file (including
@@ -729,12 +766,28 @@ to generate fully rendered HTML – ideal for static site generation (SSG).
 
 ### Project Structure
 
+```text
+.
+├── SSR/ssg.js                         → Deno helper that exports renderTemplateFile()
+└── examples/09-deno-ssg/
+    ├── build.js                       → CLI script to generate output
+    ├── data.json                      → Data input
+    ├── template.html                  → Full HTML file with embedded <template>
+    └── dist/index.html                → Output (auto-generated)
 ```
-examples/09-deno-ssg/
-├── build.js         → CLI script to generate output
-├── data.json        → Data input
-├── template.html    → Full HTML file with embedded <template>
-├── dist/index.html  → Output (auto-generated)
+
+### Example Build Script
+
+```js
+import { renderTemplateFile } from "../../SSR/ssg.js";
+
+const html = await renderTemplateFile(
+    "./template.html",
+    "./data.json"
+);
+
+await Deno.mkdir("./dist", { recursive: true });
+await Deno.writeTextFile("./dist/index.html", html);
 ```
 
 ### Example Template
@@ -765,6 +818,8 @@ examples/09-deno-ssg/
 
 ### Build with Deno
 
+From `examples/09-deno-ssg/`, run:
+
 ```bash
 deno run --allow-read --allow-write build.js
 ```
@@ -783,14 +838,15 @@ no JavaScript required on the client.
 | 03  | Attribute Binding       | `examples/03-attribute-binding/`     |
 | 04  | Conditional Rendering   | `examples/04-conditional-rendering/` |
 | 05  | Object Array Loop       | `examples/05-object-array/`          |
-| 06  | Object Map Loop         | `examples/06-object-map/`            |
+| 06  | Object Map Loop         | `examples/06 object-map/`            |
 | 07  | Nested Loops            | `examples/07-nested-loops/`          |
-| 08  | Nested Object-Map Loops | `examples/08-nested-object-map/`     |
+| 08  | Nested Object-Map Loops | `examples/08 – Nested Object-Map Loops/` |
 | 09  | Server-side Rendering   | `examples/09-deno-ssg/dist/`         |
 | 10  | Includes                | `examples/10-includes/`              |
 | 11  | Event Binding           | `examples/11-event-binding/`         |
 
-_(Launch a dev server such as `npx serve .` and open the links.)_
+_(Launch any local static server, for example VS Code Live Server or
+`python3 -m http.server`, and open the links over `http://...`.)_
 
 ---
 

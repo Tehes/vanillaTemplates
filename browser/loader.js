@@ -19,7 +19,7 @@ export async function loadDataAndTemplate(dataPath, templatePath, mountEl, optio
         if (!tplResp.ok) throw new Error(tplResp.statusText);
         const tplHtml = (await tplResp.text()).trim();
 
-        // Template-String → real <template>
+        // Convert the template string into a real <template>.
         const templateEl = document.createElement('template');
         templateEl.innerHTML = tplHtml;
 

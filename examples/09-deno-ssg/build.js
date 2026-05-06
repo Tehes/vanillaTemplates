@@ -3,13 +3,13 @@
 import { renderTemplateFile } from "../../SSR/ssg.js";
 
 async function main() {
-    // 1) Template und Daten rendern
+    // 1) Render template and data
     const html = await renderTemplateFile(
         "./template.html",
         "./data.json"
     );
 
-    // 2) dist-Verzeichnis anlegen und fertiges HTML schreiben
+    // 2) Create the dist directory and write the rendered HTML
     await Deno.mkdir("./dist", { recursive: true });
     await Deno.writeTextFile("./dist/index.html", html);
 
