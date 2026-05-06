@@ -1,5 +1,5 @@
 /* --------------------------------------------------------------------------------------------------
-Version: 0.18.0
+Version: 0.18.1
 
 Simple Vanilla JS template engine
     - completely valid HTML syntax
@@ -189,12 +189,10 @@ async function walk(node, ctx, eventBindings = null, includeCache) {
                 }
                 // For <var> wrappers, unwrap children and continue processing them
                 if (el.tagName === "VAR") {
+                    await walk(el, ctx, eventBindings, includeCache);
                     const children = [...el.childNodes];
                     el.before(...children);
                     el.remove();
-                    for (const child of children) {
-                        await walk(child, ctx, eventBindings, includeCache);
-                    }
                     continue;
                 }
             }
@@ -202,12 +200,21 @@ async function walk(node, ctx, eventBindings = null, includeCache) {
             if (el.dataset.loop) {
                 const src = chainProps(ctx, el.dataset.loop);
 
-                // Helper: clone element, recurse with new ctx, unwrap children
+                // <var> loops are transparent wrappers; real elements repeat themselves.
                 const processItem = async (itemCtx) => {
                     const clone = el.cloneNode(true);
                     clone.removeAttribute("data-loop");
-                    await walk(clone, itemCtx, eventBindings, includeCache);
-                    el.before(...clone.childNodes);
+
+                    if (clone.tagName === "VAR") {
+                        await walk(clone, itemCtx, eventBindings, includeCache);
+                        el.before(...clone.childNodes);
+                        return;
+                    }
+
+                    const itemFrag = document.createDocumentFragment();
+                    itemFrag.append(clone);
+                    await walk(itemFrag, itemCtx, eventBindings, includeCache);
+                    el.before(...itemFrag.childNodes);
                 };
 
                 if (Array.isArray(src)) {
