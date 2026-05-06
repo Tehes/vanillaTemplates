@@ -82,6 +82,20 @@ directive wrappers for grouping and applying loop (`data-loop`), conditional
 
 ## Basic Usage
 
+### Import from jsDelivr
+
+For demos, GitHub Pages projects, or other browser-only setups, you can import
+the released module directly from jsDelivr without npm, bundlers, or copying the
+file into your project:
+
+```js
+import { renderTemplate } from "https://cdn.jsdelivr.net/gh/Tehes/vanillaTemplates@v0.18.1/core/renderTemplate.js";
+```
+
+Use a fixed release tag such as `@v0.18.1` for stable pages. Avoid moving targets
+such as @master or @latest unless you explicitly want your project to follow
+future changes automatically.
+
 ### HTML Template Example
 
 ```html
