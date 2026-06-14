@@ -61,6 +61,9 @@ It is binding. When in doubt, choose the most conservative option and change les
   - Do not refactor between `function` and arrows without a clear reason.
   - Arrow functions are the preferred form for event listener callbacks, unless the handler is
     reused or grows significantly.
+  - Avoid tiny one-off helper functions. Extract functions only for reuse, real complexity,
+    meaningful domain concepts, side-effect isolation, or clear readability gains.
+    Keep simple one-off conditions inline.
 - **Comments**
   - English only
   - Use sparingly and intentionally
@@ -249,9 +252,11 @@ Accessibility should be **pragmatic, not performative**.
   - Keep event name and payload shape consistent with existing calls
 - Keep `umami.track` calls consistent with existing usage.
 - Defensive usage only:
+
   ```js
   globalThis.umami?.track("EventName", { ... });
   ```
+
 - Do not add analytics unless the project already uses them.
 
 ---
